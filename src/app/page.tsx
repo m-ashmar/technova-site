@@ -3,6 +3,7 @@ import AppProvider from "@/components/providers/AppProvider";
 import NovaScene from "@/components/hero/NovaScene";
 import ScrollDirector from "@/components/site/ScrollDirector";
 import Nav from "@/components/site/Nav";
+import ScrollProgress from "@/components/site/ScrollProgress";
 import ConsoleStrip from "@/components/site/ConsoleStrip";
 import Footer from "@/components/site/Footer";
 import IgnitionHero from "@/components/hero/IgnitionHero";
@@ -19,6 +20,7 @@ export default function Home() {
       {/* the organism: one fixed canvas behind everything, morphing with scroll */}
       <NovaScene />
       <ScrollDirector />
+      <ScrollProgress />
       <Nav />
       <main className="relative z-10">
         <IgnitionHero />

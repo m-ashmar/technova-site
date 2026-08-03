@@ -9,67 +9,103 @@
     "locales": {
       "en": {
         "title": "Zygnal — Telecom Infrastructure Portfolio",
-        "summary": "A scroll-driven 3D infrastructure story: a telecom tower built in front of you, from bare ground to live 5G signal.",
+        "summary": "A scroll-driven 3D infrastructure story: a telecom tower built in front of you, from bare ground to live 5G signal. Bilingual, WebGL, delivered end to end.",
         "highlight": "Live at zygnalsy.com"
       },
       "ar": {
         "title": "زيغنال — بوابة البنية التحتية للاتصالات",
-        "summary": "قصة بنية تحتية ثلاثية الأبعاد تُروى بالتمرير: برج اتصالات يُبنى أمامك من الأرض الجرداء حتى إشارة الجيل الخامس.",
+        "summary": "قصة بنية تحتية ثلاثية الأبعاد تُروى بالتمرير: برج اتصالات يُبنى أمامك من الأرض الجرداء حتى إشارة الجيل الخامس. بلغتين، وبتقنية WebGL، من الفكرة حتى التسليم.",
         "highlight": "مباشر على zygnalsy.com"
       }
     }
   },
   {
-    "slug": "ecommerce",
+    "slug": "halahello",
     "order": 2,
     "status": "live",
-    "tags": ["Web", "Commerce"],
+    "tags": ["E-commerce", "CMS", "Bilingual"],
     "locales": {
       "en": {
-        "title": "E-commerce Experience",
-        "summary": "A storefront with a shopping journey designed to be remembered, not endured.",
-        "highlight": "Private client"
+        "title": "Halahello — Boutique Commerce Platform",
+        "summary": "Two brands on one platform: elegant modest fashion and bespoke acrylic creations. Full storefront, cart and checkout, plus a custom-order pipeline that carries a request from quote to production — and a studio where the owners edit everything themselves.",
+        "highlight": "E-commerce · EN/AR"
       },
       "ar": {
-        "title": "تجربة تجارة إلكترونية",
-        "summary": "متجر إلكتروني برحلة تسوّق صُمّمت لتُذكَر، لا لتُحتمَل.",
-        "highlight": "لعميل خاص"
+        "title": "هلاهيلو — منصّة تجارة إلكترونية للعلامات البوتيك",
+        "summary": "علامتان على منصّة واحدة: أزياء محتشمة أنيقة وقطع أكريليك مصنوعة حسب الطلب. متجر متكامل مع سلّة وإتمام شراء، ومسار للطلبات الخاصة يرافق الطلب من التسعير حتى التنفيذ — ولوحة تحرير يضبط بها أصحاب المتجر كل شيء بأنفسهم.",
+        "highlight": "تجارة إلكترونية · عربي/إنكليزي"
+      }
+    }
+  },
+  {
+    "slug": "sbbf-judging",
+    "order": 3,
+    "status": "live",
+    "tags": ["Platform", "Real-time", "Ops"],
+    "locales": {
+      "en": {
+        "title": "Live Competition Judging System",
+        "summary": "Judging a national championship in real time: judges rank athletes from their own tablets, rounds and call-outs open and close live, and standings recompute the moment the last score lands. Built to survive a dropped connection mid-competition.",
+        "highlight": "Federation-scale · live events"
+      },
+      "ar": {
+        "title": "نظام التحكيم المباشر للبطولات",
+        "summary": "تحكيم بطولة وطنية لحظة بلحظة: كل حكَم يرتّب اللاعبين من جهازه، والجولات والنداءات تُفتح وتُغلق مباشرة، والترتيب يُحتسب فور وصول آخر تقييم. مبنيٌّ ليصمد حتى لو انقطع الاتصال في وسط البطولة.",
+        "highlight": "بحجم اتحاد رياضي · بطولات مباشرة"
       }
     }
   },
   {
     "slug": "training-platform",
-    "order": 3,
+    "order": 4,
     "status": "building",
     "tags": ["App", "Product"],
     "locales": {
       "en": {
         "title": "Online Training Platform",
-        "summary": "A complete coaching environment: exercise libraries, client programs, and tracking all the way to the goal.",
+        "summary": "A complete coaching environment: the trainer builds an exercise library, assigns programs, and follows every client from first session to the goal — all online.",
         "highlight": "Final build"
       },
       "ar": {
         "title": "منصّة تدريب أونلاين",
-        "summary": "بيئة تدريب متكاملة للمدرّب: مكتبة تمارين، برامج للعملاء، ومتابعة حتى تحقيق الهدف.",
+        "summary": "بيئة تدريب متكاملة: المدرّب يبني مكتبة تمارينه، ويسنِد البرامج، ويتابع كل عميل من أول حصّة حتى تحقيق الهدف — كل ذلك عبر الإنترنت.",
         "highlight": "اللمسات الأخيرة"
       }
     }
   },
   {
     "slug": "clinic-suite",
-    "order": 4,
+    "order": 5,
     "status": "building",
     "tags": ["App", "Product"],
     "locales": {
       "en": {
         "title": "Beauty Clinic Suite",
-        "summary": "Clinic operations and services, online — from booking to follow-up.",
+        "summary": "Clinic operations and services, online — bookings, treatments and client follow-up in one place, with the clinic's own services published to its customers.",
         "highlight": "Final build"
       },
       "ar": {
         "title": "منظومة عيادات التجميل",
-        "summary": "إدارة العيادة وخدماتها عبر الإنترنت — من الحجز إلى المتابعة.",
+        "summary": "إدارة العيادة وخدماتها عبر الإنترنت — الحجوزات والجلسات ومتابعة المراجعين في مكان واحد، مع عرض خدمات العيادة لعملائها.",
         "highlight": "اللمسات الأخيرة"
+      }
+    }
+  },
+  {
+    "slug": "mouslli",
+    "order": 6,
+    "status": "building",
+    "tags": ["Web", "Commerce"],
+    "locales": {
+      "en": {
+        "title": "Al-Mouslli Sweets — Damascus Storefront",
+        "summary": "Old-Damascus sweets brought online: a menu that stays alive through an owner-run admin panel — add a sweet, upload its photo, and it is on the site. No rebuild, no developer.",
+        "highlight": "Demo delivered"
+      },
+      "ar": {
+        "title": "حلويات المصلي — واجهة دمشقية",
+        "summary": "حلويات الشام القديمة على الإنترنت: قائمة تبقى حيّة عبر لوحة تحكّم يديرها صاحب المحل — أضف صنفًا وارفع صورته فيظهر في الموقع. بلا إعادة بناء، وبلا مبرمج.",
+        "highlight": "نسخة تجريبية مُسلَّمة"
       }
     }
   }

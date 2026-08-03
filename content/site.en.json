@@ -32,7 +32,7 @@
   "console": {
     "online": "> nova.core online — all systems nominal",
     "sections": {
-      "work": "> rendering portfolio — 4 builds loaded",
+      "work": "> rendering portfolio — shipped builds loaded",
       "services": "> capabilities online",
       "about": "> origin: damascus · est. 2026",
       "signature": "> signature: stardust",

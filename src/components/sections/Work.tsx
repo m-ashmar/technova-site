@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useApp } from "@/components/providers/AppProvider";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
+import Spotlight from "@/components/ui/Spotlight";
+import { NOVA_LAYOUT_EVENT } from "@/lib/novaState";
 
 function EmbedFrame({
   url,
@@ -54,7 +56,7 @@ export default function Work() {
   const toggleEmbed = (slug: string | null) => {
     setOpenSlug(slug);
     // sections below move — let ScrollDirector re-measure trigger positions
-    setTimeout(() => window.dispatchEvent(new Event("nova:layout")), 60);
+    setTimeout(() => window.dispatchEvent(new Event(NOVA_LAYOUT_EVENT)), 60);
   };
 
   return (
@@ -65,6 +67,7 @@ export default function Work() {
       <div className="grid gap-5 md:grid-cols-2">
         {projects.map((p, i) => (
           <Reveal key={p.slug} delay={i * 60} className="h-full">
+            <Spotlight>
             <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/50 p-7 transition duration-300 hover:border-nova/40 hover:bg-surface">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
@@ -127,6 +130,7 @@ export default function Work() {
                 )
               ) : null}
             </article>
+            </Spotlight>
           </Reveal>
         ))}
       </div>

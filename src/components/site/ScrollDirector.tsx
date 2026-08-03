@@ -3,17 +3,21 @@
 import { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { novaState } from "@/lib/novaState";
+import { heroAnchor, novaState, NOVA_LAYOUT_EVENT } from "@/lib/novaState";
 import { useApp } from "@/components/providers/AppProvider";
 
 /**
  * Drives the organism through the scroll journey:
  *
- *   hero       star, centered, full size
+ *   hero       star, centered, full size — HELD, untouched, for the whole hero
  *   #work      -> phone, tucked to the side, small
  *   #services  -> neural web, other side
  *   #signature -> the wordmark (TECHNOVA / تكنوفا), centered
  *   #contact   wordmark floats up small above the NOVA chat
+ *
+ * The hero is the site's opening act: the first chapter deliberately does not
+ * begin until #work has climbed to mid-screen (~60% of the hero scrolled), so
+ * the newborn star is never dissolving while it is still on its own stage.
  *
  * The state is recomputed *statelessly* from every chapter's progress on each
  * scroll update — sequential lerps from the base state — so instant jumps
@@ -24,8 +28,17 @@ import { useApp } from "@/components/providers/AppProvider";
  * dispatch `nova:layout` on window so trigger positions are re-measured.
  */
 
-const BASE = { morph: 0, offX: 0, offY: 0, zoom: 1, idle: 1 };
-type ChapterVars = Partial<typeof BASE>;
+type Pose = { morph: number; offX: number; offY: number; zoom: number; idle: number };
+type ChapterVars = Partial<Pose>;
+
+/** The journey's starting pose: the star parked in the hero's letter gap. */
+const basePose = (): Pose => ({
+  morph: 0,
+  offX: heroAnchor.x,
+  offY: heroAnchor.y,
+  zoom: heroAnchor.zoom,
+  idle: 1,
+});
 
 export default function ScrollDirector() {
   const { dir } = useApp();
@@ -38,19 +51,48 @@ export default function ScrollDirector() {
     }
     const side = dir === "rtl" ? -1 : 1;
 
-    const chapters: { sel: string; vars: ChapterVars; st?: ScrollTrigger }[] = [
-      { sel: "#work", vars: { morph: 1, offX: 0.58 * side, zoom: 0.55, idle: 0.65 } },
-      { sel: "#services", vars: { morph: 2, offX: -0.58 * side, zoom: 0.5, idle: 0.65 } },
-      { sel: "#signature", vars: { morph: 3, offX: 0, offY: 0.06, zoom: 0.85, idle: 1 } },
-      { sel: "#contact", vars: { offY: 0.4, zoom: 0.45, idle: 0.7 } },
+    type Chapter = {
+      sel: string;
+      start: string;
+      end: string;
+      vars: ChapterVars;
+      st?: ScrollTrigger;
+    };
+
+    const chapters: Chapter[] = [
+      {
+        sel: "#work",
+        // late start: the hero keeps its star whole and centered
+        start: "top 45%",
+        end: "top -15%",
+        vars: { morph: 1, offX: 0.58 * side, zoom: 0.55, idle: 0.65 },
+      },
+      {
+        sel: "#services",
+        start: "top 75%",
+        end: "top 25%",
+        vars: { morph: 2, offX: -0.58 * side, zoom: 0.5, idle: 0.65 },
+      },
+      {
+        sel: "#signature",
+        start: "top 80%",
+        end: "top 30%",
+        vars: { morph: 3, offX: 0, offY: 0.06, zoom: 0.85, idle: 1 },
+      },
+      {
+        sel: "#contact",
+        start: "top 75%",
+        end: "top 25%",
+        vars: { offY: 0.4, zoom: 0.45, idle: 0.7 },
+      },
     ];
 
     const apply = () => {
-      const s = { ...BASE };
+      const s = basePose();
       for (const ch of chapters) {
         const p = ch.st?.progress ?? 0;
         if (p <= 0) continue;
-        for (const key of Object.keys(ch.vars) as (keyof typeof BASE)[]) {
+        for (const key of Object.keys(ch.vars) as (keyof Pose)[]) {
           const target = ch.vars[key];
           if (target !== undefined) s[key] += (target - s[key]) * p;
         }
@@ -67,19 +109,22 @@ export default function ScrollDirector() {
       if (!el) continue;
       ch.st = ScrollTrigger.create({
         trigger: el,
-        start: "top 85%",
-        end: "top 25%",
+        start: ch.start,
+        end: ch.end,
         onUpdate: apply,
         onRefresh: apply,
       });
     }
     apply();
 
-    const onLayout = () => ScrollTrigger.refresh();
-    window.addEventListener("nova:layout", onLayout);
+    const onLayout = () => {
+      ScrollTrigger.refresh();
+      apply();
+    };
+    window.addEventListener(NOVA_LAYOUT_EVENT, onLayout);
 
     return () => {
-      window.removeEventListener("nova:layout", onLayout);
+      window.removeEventListener(NOVA_LAYOUT_EVENT, onLayout);
       for (const ch of chapters) ch.st?.kill();
     };
   }, [dir]);

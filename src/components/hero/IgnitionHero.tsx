@@ -1,20 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import BootConsole from "./BootConsole";
-import { novaState, NOVA_LIVE_EVENT } from "@/lib/novaState";
+import {
+  heroAnchor,
+  novaState,
+  NOVA_LAYOUT_EVENT,
+  NOVA_LIVE_EVENT,
+} from "@/lib/novaState";
 import { useApp } from "@/components/providers/AppProvider";
 
 type Stage = "init" | "boot" | "birth" | "live";
 
 const SEEN_KEY = "nova-ignited";
 
+/**
+ * Master-logo geometry (tech_master_logo_v2_sonnet.svg): the star spans 490
+ * units tall while the letters' cap height is 64 — the star stands ~7.66x the
+ * caps. Orbitron's cap height is ~0.7 of its font size, so the star's half
+ * span should be ~2.68x the letter font size for the hero to reproduce the
+ * brand sheet exactly.
+ */
+const STAR_HALF_SPAN_PER_FONT_PX = (490 / 64) * 0.7 * 0.5;
+
 export default function IgnitionHero() {
   const { t } = useApp();
   const [stage, setStage] = useState<Stage>("init");
   const flashRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const gapRef = useRef<HTMLSpanElement>(null);
+  const teRef = useRef<HTMLSpanElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   // Decide the entry path once, on the client.
@@ -37,6 +53,45 @@ export default function IgnitionHero() {
       setStage("boot");
     }
   }, []);
+
+  /**
+   * Pin the star into the "TE ★ CH" gap at brand-sheet proportions. Measured
+   * from the real DOM so it holds at every width, and re-measured on resize
+   * and once webfonts land (Orbitron changes the letter metrics).
+   */
+  useLayoutEffect(() => {
+    const measure = () => {
+      const gap = gapRef.current;
+      const te = teRef.current;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Below `sm` the letter row is hidden: the star simply owns the centre.
+      if (!gap || !te || gap.offsetParent === null) {
+        heroAnchor.x = 0;
+        heroAnchor.y = 0;
+        heroAnchor.zoom = 1;
+      } else {
+        const r = gap.getBoundingClientRect();
+        heroAnchor.x = (r.left + r.width / 2 - vw / 2) / (vw / 2);
+        heroAnchor.y = (vh / 2 - (r.top + r.height / 2)) / (vh / 2);
+
+        const fontPx = parseFloat(getComputedStyle(te).fontSize) || 0;
+        // NovaScene's base scale, in pixels, for the current viewport.
+        const basePx = Math.min(0.36, 0.55 * (vw / vh)) * vh;
+        heroAnchor.zoom =
+          basePx > 0
+            ? (fontPx * STAR_HALF_SPAN_PER_FONT_PX) / basePx
+            : 1;
+      }
+      window.dispatchEvent(new Event(NOVA_LAYOUT_EVENT));
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => window.removeEventListener("resize", measure);
+  }, [stage]);
 
   // The intro owns the viewport; release scroll when live.
   useEffect(() => {
@@ -131,10 +186,14 @@ export default function IgnitionHero() {
           dir="ltr"
           className="invisible hidden w-full grid-cols-[1fr_auto_1fr] items-center sm:grid"
         >
-          <span className="justify-self-end font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.14em] text-ink">
+          <span
+            ref={teRef}
+            className="justify-self-end font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.14em] text-ink"
+          >
             TE
           </span>
           <span
+            ref={gapRef}
             aria-hidden
             className="block"
             style={{ width: "clamp(90px, 16vw, 190px)" }}
