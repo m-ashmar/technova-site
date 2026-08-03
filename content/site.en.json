@@ -63,10 +63,10 @@
       "title": "A star is a beginning",
       "body": "TechNova is a Syrian software & AI studio, founded in Damascus in 2026. A nova is matter under pressure until it ignites into light — and that is how we build: pressure, precision, then light. A new company with an older obsession: software that feels alive.",
       "values": [
-        { "title": "Innovation", "body": "We build smart solutions for the future." },
-        { "title": "Excellence", "body": "We deliver high-quality digital experiences." },
-        { "title": "Reliability", "body": "We create dependable and secure solutions." },
-        { "title": "Partnership", "body": "We grow together with our clients and teams." }
+        { "icon": "innovation", "title": "Innovation", "body": "We build smart solutions for the future." },
+        { "icon": "excellence", "title": "Excellence", "body": "We deliver high-quality digital experiences." },
+        { "icon": "reliability", "title": "Reliability", "body": "We create dependable and secure solutions." },
+        { "icon": "partnership", "title": "Partnership", "body": "We grow together with our clients and teams." }
       ]
     },
     "signature": { "line": "TECHNOVA — written in stardust" },

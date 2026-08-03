@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -48,12 +49,16 @@ export default function AppProvider({
   children: ReactNode;
 }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+  // Mirrors `locale` for handlers that must read it without waiting on a
+  // re-render, so rapid toggles can never act on a stale value.
+  const localeRef = useRef<Locale>(defaultLocale);
 
   // Hydrate from whatever the init script / localStorage already decided.
   useEffect(() => {
     const l = document.documentElement.getAttribute("lang");
     if (isLocale(l)) {
       setLocaleState(l);
+      localeRef.current = l;
       document.title = bundle.site[l].meta.title;
     }
   }, [bundle]);
@@ -74,10 +79,16 @@ export default function AppProvider({
 
   const setLocale = useCallback(
     (l: Locale) => {
+      localeRef.current = l;
       setLocaleState(l);
       applyLocale(l);
     },
     [applyLocale]
+  );
+
+  const toggleLocale = useCallback(
+    () => setLocale(localeRef.current === "en" ? "ar" : "en"),
+    [setLocale]
   );
 
   const value = useMemo<AppState>(() => {
@@ -94,9 +105,9 @@ export default function AppProvider({
       projects: bundle.projects.map(strip) as LocalizedProject[],
       services: bundle.services.map(strip) as LocalizedService[],
       setLocale,
-      toggleLocale: () => setLocale(locale === "en" ? "ar" : "en"),
+      toggleLocale,
     };
-  }, [bundle, locale, setLocale]);
+  }, [bundle, locale, setLocale, toggleLocale]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

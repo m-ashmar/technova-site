@@ -264,11 +264,14 @@ function Effects() {
  */
 export default function NovaScene() {
   const [count, setCount] = useState(0);
+  const [maxDpr, setMaxDpr] = useState(2);
 
   useEffect(() => {
     const small = window.innerWidth < 768;
     const weak = (navigator.hardwareConcurrency ?? 8) <= 4;
     setCount(small || weak ? 32000 : 90000);
+    // Bloom is fill-rate bound; cap the buffer on phones and weak GPUs.
+    setMaxDpr(small || weak ? 1.5 : 2);
 
     const onMove = (e: PointerEvent) => {
       cursor.x = e.clientX;
@@ -283,7 +286,7 @@ export default function NovaScene() {
     <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
       <Canvas
         style={{ position: "absolute", inset: 0 }}
-        dpr={[1, 2]}
+        dpr={[1, maxDpr]}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
         camera={{ fov: 42, position: [0, 0, 3.4] }}
         onCreated={({ gl }) => {

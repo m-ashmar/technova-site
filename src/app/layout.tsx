@@ -65,10 +65,7 @@ export const viewport: Viewport = {
 };
 
 // Runs before paint: applies stored locale so there is no direction/language flash.
-// The `rafshim` clause is a verification aid: with ?rafshim=1, animation frames are
-// driven by timers so the experience also runs in hidden/throttled tabs (used by
-// automated checks in dev; inert unless explicitly requested).
-const initScript = `(function(){try{var l=localStorage.getItem('locale');if(l!=='en'&&l!=='ar')l='en';var d=document.documentElement;d.setAttribute('lang',l);d.setAttribute('dir',l==='ar'?'rtl':'ltr');if(l==='ar')d.classList.add('lang-ar');}catch(e){}try{if(location.search.indexOf('rafshim')>-1){window.requestAnimationFrame=function(cb){return window.setTimeout(function(){cb(performance.now())},33)};window.cancelAnimationFrame=function(id){window.clearTimeout(id)};}}catch(e){}})();`;
+const initScript = `(function(){try{var l=localStorage.getItem('locale');if(l!=='en'&&l!=='ar')l='en';var d=document.documentElement;d.setAttribute('lang',l);d.setAttribute('dir',l==='ar'?'rtl':'ltr');if(l==='ar')d.classList.add('lang-ar');}catch(e){}})();`;
 
 export default function RootLayout({
   children,

@@ -36,6 +36,21 @@ html.lang-ar .ar-tight {
   letter-spacing: 0 !important;
 }
 
+/* Cinematic falloff: sits above the starfield, below the content, so the
+   star burns brightest at the centre of attention. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    transparent 42%,
+    rgb(5 6 8 / 55%) 100%
+  );
+}
+
 ::selection {
   background: rgb(10 132 255 / 35%);
   color: #fff;

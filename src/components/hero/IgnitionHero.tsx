@@ -66,11 +66,12 @@ export default function IgnitionHero() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      // Below `sm` the letter row is hidden: the star simply owns the centre.
+      // Below `sm` the letter row is hidden: the star owns the upper half,
+      // sitting clear of the headline stack beneath it.
       if (!gap || !te || gap.offsetParent === null) {
         heroAnchor.x = 0;
-        heroAnchor.y = 0;
-        heroAnchor.zoom = 1;
+        heroAnchor.y = 0.18;
+        heroAnchor.zoom = 0.82;
       } else {
         const r = gap.getBoundingClientRect();
         heroAnchor.x = (r.left + r.width / 2 - vw / 2) / (vw / 2);

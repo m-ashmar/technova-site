@@ -7,7 +7,13 @@ import { z } from "zod";
  */
 
 const NavLink = z.object({ id: z.string().min(1), label: z.string().min(1) });
-const Value = z.object({ title: z.string().min(1), body: z.string().min(1) });
+const Value = z.object({
+  title: z.string().min(1),
+  body: z.string().min(1),
+  // Optional: names a glyph in ValueIcon. Anything unknown draws the nova
+  // star instead, so new values are always safe to add.
+  icon: z.string().optional(),
+});
 const Option = z.object({ id: z.string().min(1), label: z.string().min(1) });
 
 export const SiteContentSchema = z.object({

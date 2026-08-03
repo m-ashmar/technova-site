@@ -9,6 +9,7 @@ export default function Nav() {
   const { t, locale, toggleLocale } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -45,14 +46,36 @@ export default function Nav() {
     return () => io.disconnect();
   }, [t]);
 
+  // The open menu owns the screen: lock scroll, and Escape closes it.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.documentElement.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled ? "border-b border-line bg-bg/70 backdrop-blur-md" : ""
+        scrolled || menuOpen
+          ? "border-b border-line bg-bg/70 backdrop-blur-md"
+          : ""
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
-        <a href="#top" className="group flex items-center gap-2.5" aria-label="TechNova">
+        <a
+          href="#top"
+          onClick={() => setMenuOpen(false)}
+          className="group flex items-center gap-2.5"
+          aria-label="TechNova"
+        >
           <svg
             viewBox={STAR_GLYPH_VIEWBOX}
             className="h-6 w-auto transition-transform duration-500 group-hover:scale-110"
@@ -105,8 +128,71 @@ export default function Nav() {
           >
             {t.nav.cta}
           </a>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label="Menu"
+            className="relative h-9 w-9 md:hidden"
+          >
+            <span
+              className={`absolute inset-x-2 h-px bg-ink transition-all duration-300 ${
+                menuOpen ? "top-1/2 rotate-45" : "top-[15px]"
+              }`}
+            />
+            <span
+              className={`absolute inset-x-2 top-1/2 h-px bg-ink transition-opacity duration-200 ${
+                menuOpen ? "opacity-0" : "opacity-100"
+              }`}
+            />
+            <span
+              className={`absolute inset-x-2 h-px bg-ink transition-all duration-300 ${
+                menuOpen ? "top-1/2 -rotate-45" : "bottom-[15px]"
+              }`}
+            />
+          </button>
         </div>
       </nav>
+
+      {/* mobile menu */}
+      <div
+        id="mobile-menu"
+        className={`fixed inset-x-0 top-16 bottom-0 z-40 bg-bg/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
+          menuOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+      >
+        <ul className="flex flex-col gap-2 px-6 pt-10">
+          {t.nav.links.map((l, i) => (
+            <li key={l.id}>
+              <a
+                href={`#${l.id}`}
+                onClick={() => setMenuOpen(false)}
+                style={{ transitionDelay: menuOpen ? `${i * 60 + 80}ms` : "0ms" }}
+                className={`flex items-baseline gap-4 border-b border-line py-5 font-display text-2xl text-ink transition-all duration-500 ${
+                  menuOpen ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                }`}
+              >
+                <span className="font-mono text-xs text-nova-soft/70">
+                  0{i + 1}
+                </span>
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div className="px-6 pt-10">
+          <a
+            href="#contact"
+            onClick={() => setMenuOpen(false)}
+            className="inline-flex rounded-full bg-nova px-7 py-3 text-sm font-medium text-white shadow-[0_0_28px_rgb(10_132_255/45%)]"
+          >
+            {t.nav.cta}
+          </a>
+        </div>
+      </div>
     </header>
   );
 }

@@ -3,6 +3,8 @@
 import { useApp } from "@/components/providers/AppProvider";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
+import Spotlight from "@/components/ui/Spotlight";
+import ValueIcon from "@/components/ui/ValueIcon";
 
 export default function About() {
   const { t } = useApp();
@@ -17,13 +19,16 @@ export default function About() {
         </Reveal>
         <div className="grid content-start gap-4 sm:grid-cols-2">
           {a.values.map((v, i) => (
-            <Reveal key={v.title} delay={i * 70}>
-              <div className="rounded-2xl border border-line bg-surface/40 p-5">
-                <h3 className="font-display text-sm font-medium tracking-wide text-nova-soft">
-                  {v.title}
-                </h3>
-                <p className="mt-2 text-xs leading-6 text-muted">{v.body}</p>
-              </div>
+            <Reveal key={v.title} delay={i * 80}>
+              <Spotlight>
+                <div className="h-full rounded-2xl border border-line bg-surface/40 p-5 transition duration-300 hover:border-nova/30">
+                  <ValueIcon name={v.icon} />
+                  <h3 className="mt-4 font-display text-sm font-medium tracking-wide text-nova-soft">
+                    {v.title}
+                  </h3>
+                  <p className="mt-2 text-xs leading-6 text-muted">{v.body}</p>
+                </div>
+              </Spotlight>
             </Reveal>
           ))}
         </div>

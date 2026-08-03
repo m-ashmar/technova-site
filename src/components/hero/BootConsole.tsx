@@ -33,7 +33,7 @@ export default function BootConsole({
       last = now;
       // Hold the show for its audience: while the tab is hidden, freeze
       // progress so the birth plays when the visitor actually looks.
-      if (document.hidden && !window.location.search.includes("rafshim")) {
+      if (document.hidden) {
         if (lineStartRef.current !== null) lineStartRef.current += dt;
         return;
       }
