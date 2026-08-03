@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #050608;
+  --color-surface: #0c0e13;
+  --color-ink: #f2f5fb;
+  --color-muted: #8a93a6;
+  --color-nova: #0a84ff;
+  --color-nova-soft: #4d9aff;
+  --color-line: rgb(255 255 255 / 8%);
+  --font-display: var(--font-orbitron);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jbmono);
+}
+
+html {
+  background: #050608;
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink font-sans;
+  text-rendering: optimizeLegibility;
+}
+
+/* Arabic: swap body + display faces, kill Latin letter-spacing */
+html.lang-ar body {
+  font-family: var(--font-ar), var(--font-inter), sans-serif;
+}
+html.lang-ar .font-display {
+  font-family: var(--font-ar), sans-serif;
+  letter-spacing: 0 !important;
+}
+html.lang-ar .ar-tight {
+  letter-spacing: 0 !important;
+}
+
+::selection {
+  background: rgb(10 132 255 / 35%);
+  color: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1c2333 transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-nova-soft);
+  outline-offset: 2px;
+}
+
+/* Boot console caret */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.caret::after {
+  content: "▊";
+  margin-inline-start: 3px;
+  color: var(--color-nova-soft);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+/* Scroll reveals */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Soft blue glow for hero-scale text */
+.text-glow {
+  text-shadow:
+    0 0 24px rgb(10 132 255 / 45%),
+    0 0 60px rgb(10 132 255 / 22%);
+}
+
+/* Scroll hint line */
+@keyframes drop-line {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-line {
+  animation: drop-line 2.2s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { transition: none; opacity: 1; transform: none; }
+  .scroll-line { animation: none; }
+  .caret::after { animation: none; }
+}

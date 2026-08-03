@@ -1,0 +1,75 @@
+[
+  {
+    "slug": "zygnal",
+    "order": 1,
+    "status": "live",
+    "tags": ["Web", "3D", "Bilingual"],
+    "link": "https://zygnalsy.com",
+    "locales": {
+      "en": {
+        "title": "Zygnal — Telecom Infrastructure Portfolio",
+        "summary": "A scroll-driven 3D infrastructure story: a telecom tower built in front of you, from bare ground to live 5G signal.",
+        "highlight": "Live at zygnalsy.com"
+      },
+      "ar": {
+        "title": "زيغنال — بوابة البنية التحتية للاتصالات",
+        "summary": "قصة بنية تحتية ثلاثية الأبعاد تُروى بالتمرير: برج اتصالات يُبنى أمامك من الأرض الجرداء حتى إشارة الجيل الخامس.",
+        "highlight": "مباشر على zygnalsy.com"
+      }
+    }
+  },
+  {
+    "slug": "ecommerce",
+    "order": 2,
+    "status": "live",
+    "tags": ["Web", "Commerce"],
+    "locales": {
+      "en": {
+        "title": "E-commerce Experience",
+        "summary": "A storefront with a shopping journey designed to be remembered, not endured.",
+        "highlight": "Private client"
+      },
+      "ar": {
+        "title": "تجربة تجارة إلكترونية",
+        "summary": "متجر إلكتروني برحلة تسوّق صُمّمت لتُذكَر، لا لتُحتمَل.",
+        "highlight": "لعميل خاص"
+      }
+    }
+  },
+  {
+    "slug": "training-platform",
+    "order": 3,
+    "status": "building",
+    "tags": ["App", "Product"],
+    "locales": {
+      "en": {
+        "title": "Online Training Platform",
+        "summary": "A complete coaching environment: exercise libraries, client programs, and tracking all the way to the goal.",
+        "highlight": "Final build"
+      },
+      "ar": {
+        "title": "منصّة تدريب أونلاين",
+        "summary": "بيئة تدريب متكاملة للمدرّب: مكتبة تمارين، برامج للعملاء، ومتابعة حتى تحقيق الهدف.",
+        "highlight": "اللمسات الأخيرة"
+      }
+    }
+  },
+  {
+    "slug": "clinic-suite",
+    "order": 4,
+    "status": "building",
+    "tags": ["App", "Product"],
+    "locales": {
+      "en": {
+        "title": "Beauty Clinic Suite",
+        "summary": "Clinic operations and services, online — from booking to follow-up.",
+        "highlight": "Final build"
+      },
+      "ar": {
+        "title": "منظومة عيادات التجميل",
+        "summary": "إدارة العيادة وخدماتها عبر الإنترنت — من الحجز إلى المتابعة.",
+        "highlight": "اللمسات الأخيرة"
+      }
+    }
+  }
+]

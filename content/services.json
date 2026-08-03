@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "ai",
+    "order": 1,
+    "icon": "ai",
+    "locales": {
+      "en": {
+        "title": "AI Solutions",
+        "body": "Custom agents, chat intelligence and automation that actually ships — built on modern models and wired into your business."
+      },
+      "ar": {
+        "title": "حلول الذكاء الاصطناعي",
+        "body": "وكلاء مخصّصون وذكاء محادثة وأتمتة تصل إلى الإنتاج فعلًا — مبنية على أحدث النماذج وموصولة بأعمالك."
+      }
+    }
+  },
+  {
+    "slug": "apps",
+    "order": 2,
+    "icon": "apps",
+    "locales": {
+      "en": {
+        "title": "Apps & Platforms",
+        "body": "Full products from database to app store: training platforms, clinic management, operations systems."
+      },
+      "ar": {
+        "title": "التطبيقات والمنصّات",
+        "body": "منتجات كاملة من قاعدة البيانات إلى المتجر: منصّات تدريب، إدارة عيادات، وأنظمة تشغيل."
+      }
+    }
+  },
+  {
+    "slug": "web",
+    "order": 3,
+    "icon": "web",
+    "locales": {
+      "en": {
+        "title": "Web Experiences",
+        "body": "Sites like this one: 3D, motion, bilingual and fast — windows your clients remember."
+      },
+      "ar": {
+        "title": "تجارب الويب",
+        "body": "مواقع مثل هذا الموقع: ثلاثية الأبعاد، حركة، بلغتين، وسريعة — نوافذ يتذكّرها عملاؤك."
+      }
+    }
+  },
+  {
+    "slug": "automation",
+    "order": 4,
+    "icon": "auto",
+    "locales": {
+      "en": {
+        "title": "Automation & Integration",
+        "body": "Pipelines, dashboards and the glue between your tools — so the boring work runs itself."
+      },
+      "ar": {
+        "title": "الأتمتة والتكامل",
+        "body": "خطوط بيانات ولوحات تحكّم ووصلات بين أدواتك — ليُدير العملُ المملُّ نفسَه بنفسه."
+      }
+    }
+  }
+]

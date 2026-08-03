@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "title": "TechNova — Software & AI Studio",
+    "description": "Syrian software & AI studio building intelligent apps, web experiences and AI solutions — Solutions That Inspire."
+  },
+  "nav": {
+    "links": [
+      { "id": "work", "label": "Work" },
+      { "id": "services", "label": "Services" },
+      { "id": "about", "label": "About" },
+      { "id": "contact", "label": "Contact" }
+    ],
+    "cta": "Start a project"
+  },
+  "boot": {
+    "lines": [
+      "nova.agent // waking",
+      "core systems … online",
+      "collecting stardust",
+      "ignition"
+    ],
+    "skip": "skip intro"
+  },
+  "hero": {
+    "eyebrow": "SOFTWARE & AI STUDIO — DAMASCUS",
+    "tagline": "SOLUTIONS THAT INSPIRE",
+    "statement": "We build intelligent products — AI solutions, apps and web experiences. This website is our first demo: it was born in front of you.",
+    "ctaPrimary": "Start a project",
+    "ctaSecondary": "See the work",
+    "scrollHint": "SCROLL"
+  },
+  "console": {
+    "online": "> nova.core online — all systems nominal"
+  },
+  "sections": {
+    "services": {
+      "eyebrow": "01 — SERVICES",
+      "title": "What we build",
+      "lead": "Four capabilities. One obsession: products that feel alive."
+    },
+    "work": {
+      "eyebrow": "02 — WORK",
+      "title": "Proof, not promises",
+      "lead": "Real products for real clients — no mockups.",
+      "note": "Playable versions of every project are landing on this page soon.",
+      "statusLabels": {
+        "live": "LIVE",
+        "building": "IN THE FORGE",
+        "soon": "SOON"
+      }
+    },
+    "about": {
+      "eyebrow": "03 — ORIGIN",
+      "title": "A star is a beginning",
+      "body": "TechNova is a Syrian software & AI studio, founded in Damascus in 2026. A nova is matter under pressure until it ignites into light — and that is how we build: pressure, precision, then light. A new company with an older obsession: software that feels alive.",
+      "values": [
+        { "title": "Innovation", "body": "We build smart solutions for the future." },
+        { "title": "Excellence", "body": "We deliver high-quality digital experiences." },
+        { "title": "Reliability", "body": "We create dependable and secure solutions." },
+        { "title": "Partnership", "body": "We grow together with our clients and teams." }
+      ]
+    },
+    "contact": {
+      "eyebrow": "04 — CONTACT",
+      "title": "Tell us what you're imagining",
+      "body": "Soon you'll talk to NOVA — our AI — right here in this corner of the site. Until then, the founder reads every message personally.",
+      "email": "nova@technovasy.com",
+      "emailLabel": "Write to the founder",
+      "novaNote": "NOVA.intake — in training"
+    }
+  },
+  "footer": {
+    "rights": "© 2026 TechNova — Damascus, Syria",
+    "credit": "This site is our own product: designed, engineered and ignited by TechNova."
+  }
+}
