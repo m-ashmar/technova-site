@@ -24,6 +24,7 @@ const vert = /* glsl */ `
   attribute vec3 aGraphB;
   attribute float aGraphT;
   attribute vec3 aWord;
+  attribute float aTone;
   attribute float aSeed;
   attribute float aKind;
 
@@ -43,6 +44,7 @@ const vert = /* glsl */ `
   varying float vHot;
   varying float vEnergy;
   varying float vFade;
+  varying float vBlue;
 
   float easeOutQuint(float t) { return 1.0 - pow(1.0 - t, 5.0); }
 
@@ -124,6 +126,27 @@ const vert = /* glsl */ `
     vEnergy = pulse * gw;
     vFade = mix(1.0, mix(0.18, 1.0, alive), isEdge * gw);
 
+    // ---- colour per stage ----
+    // The star's own mix is left untouched (it is the look we want in the
+    // hero). Later stages re-tint so the brand blue survives: additive
+    // blending drives everything toward white, so blue has to be assigned
+    // deliberately rather than left to chance.
+    float lane = floor(aSeed * 7.0);
+    float starBlue = clamp(aKind + 0.38 * fract(aSeed * 5.31), 0.0, 1.0);
+    float flowBlue = 0.22 + 0.68 * fract(lane * 0.41);      // lanes of mixed traffic
+    float graphBlue = mix(0.10, 0.92, isEdge);              // white nodes, blue links
+    float wordBlue = aTone;                                 // TECH white · NOVA blue
+    float blueness = starBlue;
+    blueness = mix(blueness, flowBlue, m1);
+    blueness = mix(blueness, graphBlue, m2);
+    blueness = mix(blueness, wordBlue, m3);
+    vBlue = blueness;
+
+    // Exposure falls once we leave the hero: at full strength the bloom
+    // blows every particle to white and both the blue traffic and the
+    // wordmark's letterforms disappear into glare.
+    float stageDim = mix(1.0, 0.62, clamp(uMorph, 0.0, 1.0));
+
     // ---- birth: dust -> collapsing core -> shape ----
     float stag = aSeed * 0.30;
     float p = clamp((uProgress - stag) / (1.0 - stag), 0.0, 1.0);
@@ -156,10 +179,14 @@ const vert = /* glsl */ `
     pos.xy += (dm / max(md, 1e-3)) * smoothstep(0.6, 0.0, md) * 0.24 * formed * eff;
 
     vHot = pow(pa, 2.0) * (1.0 - pb);
+    vFade *= stageDim;
 
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    // Points also tighten as the word forms, so the letterforms read as
+    // letters rather than as one continuous smear of light.
     gl_PointSize = uSize * (0.55 + 0.9 * fract(aSeed * 3.71))
-      * (1.0 + vHot * 1.6 + vEnergy * 1.3) * (0.6 + 0.4 * uZoom) / max(-mv.z, 0.1);
+      * (1.0 + vHot * 1.6 + vEnergy * 1.3) * (0.6 + 0.4 * uZoom)
+      * mix(1.0, 0.78, m3) / max(-mv.z, 0.1);
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -172,13 +199,17 @@ const frag = /* glsl */ `
   varying float vHot;
   varying float vEnergy;
   varying float vFade;
+  varying float vBlue;
 
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float disc = smoothstep(0.5, 0.06, d);
     vec3 metal = vec3(0.92, 0.94, 1.0);
-    vec3 nova = vec3(0.055, 0.52, 1.0);
-    vec3 col = mix(metal, nova, clamp(vKind + 0.38 * fract(vSeed * 5.31), 0.0, 1.0));
+    // A deeper, more saturated blue than the UI token: additive blending
+    // washes colour out, so the particle blue has to start further from white
+    // than the CSS blue does to survive on screen.
+    vec3 nova = vec3(0.03, 0.38, 1.0);
+    vec3 col = mix(metal, nova, vBlue);
     col += vHot;
     // energy running the links: blue-white, hot enough for bloom to catch it
     col += vEnergy * vec3(0.45, 0.72, 1.0) * 1.7;
@@ -222,19 +253,26 @@ function Particles({ count }: { count: number }) {
 
   // The wordmark cloud is locale-dependent and needs the real webfonts;
   // build immediately (placeholder if fonts pending), rebuild when ready.
-  const [word, setWord] = useState<{ arr: Float32Array; v: number }>(() => ({
+  const [word, setWord] = useState<{
+    arr: Float32Array;
+    tone: Float32Array;
+    v: number;
+  }>(() => ({
     arr: new Float32Array(count * 3),
+    tone: new Float32Array(count),
     v: 0,
   }));
   useEffect(() => {
     let alive = true;
     const make = () => {
       if (!alive) return;
-      const text = locale === "ar" ? "تكنوفا" : "TECHNOVA";
-      const family =
-        locale === "ar" ? cssFont("--font-ar") : cssFont("--font-orbitron");
-      const arr = buildWordSamples(count, text, family);
-      setWord((w) => ({ arr, v: w.v + 1 }));
+      const ar = locale === "ar";
+      // the head keeps the white of "TECH"; the tail carries the nova blue
+      const text = ar ? "تكنوفا" : "TECHNOVA";
+      const head = ar ? "تك" : "TECH";
+      const family = ar ? cssFont("--font-ar") : cssFont("--font-orbitron");
+      const { pos, tone } = buildWordSamples(count, text, family, head, ar);
+      setWord((w) => ({ arr: pos, tone, v: w.v + 1 }));
     };
     make();
     document.fonts?.ready.then(make);
@@ -319,6 +357,11 @@ function Particles({ count }: { count: number }) {
           attach="attributes-aWord"
           args={[word.arr, 3]}
         />
+        <bufferAttribute
+          key={`tone-${word.v}`}
+          attach="attributes-aTone"
+          args={[word.tone, 1]}
+        />
         <bufferAttribute attach="attributes-aSeed" args={[seeds, 1]} />
         <bufferAttribute attach="attributes-aKind" args={[kinds, 1]} />
       </bufferGeometry>
@@ -354,7 +397,12 @@ function DevBridge() {
 function Effects() {
   const bloom = useRef<{ intensity: number } | null>(null);
   useFrame(() => {
-    if (bloom.current) bloom.current.intensity = novaState.bloom;
+    if (!bloom.current) return;
+    // Full glare belongs to the hero — it is what makes the ignition feel
+    // like light. Past the star it is dialled back, otherwise the bloom
+    // swallows the blue traffic and turns the wordmark into a smear.
+    const stage = Math.min(1, Math.max(0, novaState.morph));
+    bloom.current.intensity = novaState.bloom * (1 - 0.62 * stage);
   });
   return (
     <EffectComposer>

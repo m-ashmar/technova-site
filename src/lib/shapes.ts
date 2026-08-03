@@ -107,48 +107,78 @@ export function buildWordSamples(
   count: number,
   text: string,
   fontFamily: string,
+  /** the leading part that stays white — "TECH" (or "تك") */
+  head: string,
+  rtl: boolean,
   seed = 7
-): Float32Array {
+): { pos: Float32Array; tone: Float32Array } {
   const W = 640,
     H = 160;
   const cnv = document.createElement("canvas");
   cnv.width = W;
   cnv.height = H;
   const ctx = cnv.getContext("2d");
-  const out = new Float32Array(count * 3);
+  const pos = new Float32Array(count * 3);
+  const tone = new Float32Array(count);
   const rng = mulberry32(seed);
   const gauss = gaussFactory(rng);
   const pts: number[] = [];
+  let minX = W,
+    maxX = 0;
+  let headRatio = 0.5;
+
   if (ctx) {
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = `700 ${Math.round(H * 0.58)}px ${fontFamily || "sans-serif"}`;
+    // Draw the word whole — never in two pieces — so shaping and kerning stay
+    // intact (critical for Arabic, where letters must remain connected).
     ctx.fillText(text, W / 2, H / 2 + H * 0.03, W * 0.94);
+
+    const full = ctx.measureText(text).width;
+    const headW = ctx.measureText(head).width;
+    if (full > 0) headRatio = Math.min(1, Math.max(0, headW / full));
+
     const data = ctx.getImageData(0, 0, W, H).data;
     for (let y = 0; y < H; y++) {
       for (let x = 0; x < W; x++) {
-        if (data[(y * W + x) * 4 + 3] > 110) pts.push(x, y);
+        if (data[(y * W + x) * 4 + 3] > 110) {
+          pts.push(x, y);
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+        }
       }
     }
   }
+
+  // Split on the *rendered* extent, so `fillText`'s maxWidth squeeze can't
+  // throw the boundary off. In RTL the head sits on the right.
+  const span = Math.max(1, maxX - minX);
+  const splitX = rtl
+    ? maxX - headRatio * span
+    : minX + headRatio * span;
+
   const n = pts.length / 2;
   const scaleTo = 1.95; // world width, pre-uScale
   for (let i = 0; i < count; i++) {
     if (n === 0) {
       // font not ready / empty raster: soft ellipse placeholder
       const ang = rng() * Math.PI * 2;
-      out[i * 3] = Math.cos(ang) * 0.8;
-      out[i * 3 + 1] = Math.sin(ang) * 0.2;
-      out[i * 3 + 2] = 0;
+      pos[i * 3] = Math.cos(ang) * 0.8;
+      pos[i * 3 + 1] = Math.sin(ang) * 0.2;
+      pos[i * 3 + 2] = 0;
+      tone[i] = i % 2;
       continue;
     }
     const pi = (rng() * n) | 0;
     const x = pts[pi * 2] + rng();
     const y = pts[pi * 2 + 1] + rng();
-    out[i * 3] = (x / W - 0.5) * scaleTo;
-    out[i * 3 + 1] = (0.5 - y / H) * scaleTo * (H / W);
-    out[i * 3 + 2] = gauss() * 0.02;
+    pos[i * 3] = (x / W - 0.5) * scaleTo;
+    pos[i * 3 + 1] = (0.5 - y / H) * scaleTo * (H / W);
+    pos[i * 3 + 2] = gauss() * 0.02;
+    // 0 = white (TECH), 1 = nova blue (NOVA)
+    tone[i] = rtl ? (x > splitX ? 0 : 1) : x < splitX ? 0 : 1;
   }
-  return out;
+  return { pos, tone };
 }
