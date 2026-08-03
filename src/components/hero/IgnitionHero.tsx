@@ -259,15 +259,23 @@ export default function IgnitionHero() {
         >
           <span
             ref={teRef}
-            className="justify-self-end font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.14em] text-ink"
+            className="justify-self-end font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink"
           >
             TE
           </span>
+          {/*
+            The star's slot, sized in the letters' own units so it scales with
+            them at every width. The master logo puts the E and C almost
+            against the star's arms — 10 units of air beside a 160-unit star —
+            and 1.45x the font size reproduces exactly that: the star is 1.75x
+            wide, the E's trailing letter-space gives back 0.26x, leaving a
+            hair of clearance on each side.
+          */}
           <span
             ref={gapRef}
             aria-hidden
             className="relative block"
-            style={{ width: "clamp(90px, 16vw, 190px)" }}
+            style={{ width: "calc(clamp(3rem, 9vw, 6.6rem) * 1.45)" }}
           >
             {staticStar && (
               <svg
@@ -279,7 +287,12 @@ export default function IgnitionHero() {
               </svg>
             )}
           </span>
-          <span className="justify-self-start font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.14em] text-ink">
+          {/*
+            `ps` matches the tracking: CSS letter-spacing trails every glyph,
+            including the E, so without an equal pad before the C the star
+            would sit closer to the C than to the E.
+          */}
+          <span className="justify-self-start ps-[0.26em] font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink">
             CH
           </span>
         </div>
