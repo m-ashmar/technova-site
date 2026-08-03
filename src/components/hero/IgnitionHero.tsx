@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import NovaScene from "./NovaScene";
 import BootConsole from "./BootConsole";
 import { novaState, NOVA_LIVE_EVENT } from "@/lib/novaState";
 import { useApp } from "@/components/providers/AppProvider";
@@ -14,17 +13,12 @@ const SEEN_KEY = "nova-ignited";
 export default function IgnitionHero() {
   const { t } = useApp();
   const [stage, setStage] = useState<Stage>("init");
-  const [count, setCount] = useState(0);
   const flashRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Decide particle budget + entry path once, on the client.
+  // Decide the entry path once, on the client.
   useEffect(() => {
-    const small = window.innerWidth < 768;
-    const weak = (navigator.hardwareConcurrency ?? 8) <= 4;
-    setCount(small || weak ? 32000 : 90000);
-
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const replay = new URLSearchParams(window.location.search).has("boot");
     let seen = false;
@@ -95,8 +89,6 @@ export default function IgnitionHero() {
 
   return (
     <section id="top" className="relative h-[100svh] min-h-[560px] overflow-hidden">
-      <NovaScene count={count} />
-
       {/* ignition flash */}
       <div
         ref={flashRef}

@@ -5,6 +5,7 @@
     "status": "live",
     "tags": ["Web", "3D", "Bilingual"],
     "link": "https://zygnalsy.com",
+    "media": { "embed": "https://zygnalsy.com" },
     "locales": {
       "en": {
         "title": "Zygnal — Telecom Infrastructure Portfolio",

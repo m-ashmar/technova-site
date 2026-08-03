@@ -83,6 +83,11 @@ html.lang-ar .ar-tight {
     0 0 60px rgb(10 132 255 / 22%);
 }
 
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Scroll hint line */
 @keyframes drop-line {
   0% { transform: scaleY(0); transform-origin: top; }

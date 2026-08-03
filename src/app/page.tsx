@@ -1,5 +1,7 @@
 import { loadContent } from "@/lib/content/loader";
 import AppProvider from "@/components/providers/AppProvider";
+import NovaScene from "@/components/hero/NovaScene";
+import ScrollDirector from "@/components/site/ScrollDirector";
 import Nav from "@/components/site/Nav";
 import ConsoleStrip from "@/components/site/ConsoleStrip";
 import Footer from "@/components/site/Footer";
@@ -7,18 +9,23 @@ import IgnitionHero from "@/components/hero/IgnitionHero";
 import Services from "@/components/sections/Services";
 import Work from "@/components/sections/Work";
 import About from "@/components/sections/About";
+import Signature from "@/components/sections/Signature";
 import Contact from "@/components/sections/Contact";
 
 export default function Home() {
   const bundle = loadContent();
   return (
     <AppProvider bundle={bundle}>
+      {/* the organism: one fixed canvas behind everything, morphing with scroll */}
+      <NovaScene />
+      <ScrollDirector />
       <Nav />
-      <main>
+      <main className="relative z-10">
         <IgnitionHero />
         <Work />
         <Services />
         <About />
+        <Signature />
         <Contact />
       </main>
       <ConsoleStrip />

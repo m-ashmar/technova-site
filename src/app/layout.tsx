@@ -5,7 +5,6 @@ import {
   JetBrains_Mono,
   IBM_Plex_Sans_Arabic,
 } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const display = Orbitron({
@@ -82,9 +81,8 @@ export default function RootLayout({
       className={`${display.variable} ${sans.variable} ${mono.variable} ${arabic.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <Script id="app-init" strategy="beforeInteractive">
-          {initScript}
-        </Script>
+        {/* plain blocking inline script: runs during parse, before paint */}
+        <script dangerouslySetInnerHTML={{ __html: initScript }} />
         {children}
       </body>
     </html>
