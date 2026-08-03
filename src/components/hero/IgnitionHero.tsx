@@ -75,6 +75,15 @@ export default function IgnitionHero() {
     novaState.progress = live ? 1 : 0;
     novaState.bloom = 1.15;
     novaState.idle = live && reduced ? 0.35 : 1;
+
+    // The intro is the first thing anyone sees, so it starts at the top —
+    // whatever the browser restored or another component scrolled to.
+    if (!live) {
+      try {
+        history.scrollRestoration = "manual";
+      } catch {}
+      window.scrollTo(0, 0);
+    }
     /* eslint-disable-next-line react-hooks/set-state-in-effect --
        client-only entry decision; reading it during render would desync
        hydration */

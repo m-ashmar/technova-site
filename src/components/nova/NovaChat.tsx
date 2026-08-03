@@ -71,7 +71,8 @@ export default function NovaChat() {
   const [briefDraft, setBriefDraft] = useState("");
   const [contactDraft, setContactDraft] = useState("");
   const honeypotRef = useRef<HTMLInputElement>(null);
-  const endRef = useRef<HTMLDivElement>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
+  const firstRunRef = useRef(true);
 
   const step = !answers.type
     ? "type"
@@ -85,8 +86,22 @@ export default function NovaChat() {
             ? "contact"
             : "recap";
 
+  /**
+   * Keep the newest message in view by scrolling the thread's OWN box.
+   * `scrollIntoView` must never be used here: it walks up and scrolls every
+   * scrollable ancestor, so on mount it dragged the whole document down to
+   * the chat — visitors landed at the bottom of the site, past the intro,
+   * with the star already in its final pose. The first run is skipped too.
+   */
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (firstRunRef.current) {
+      firstRunRef.current = false;
+      return;
+    }
+    const thread = threadRef.current;
+    if (thread) {
+      thread.scrollTo({ top: thread.scrollHeight, behavior: "smooth" });
+    }
   }, [step, phase]);
 
   const reset = () => {
@@ -155,7 +170,10 @@ export default function NovaChat() {
       </div>
 
       {/* thread */}
-      <div className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pe-1 text-start">
+      <div
+        ref={threadRef}
+        className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pe-1 text-start"
+      >
         <NovaBubble>{n.greeting}</NovaBubble>
         <NovaBubble>{n.steps.type.q}</NovaBubble>
         {answers.type ? (
@@ -347,7 +365,6 @@ export default function NovaChat() {
           </NovaBubble>
         )}
 
-        <div ref={endRef} />
       </div>
 
       {/* honeypot */}
