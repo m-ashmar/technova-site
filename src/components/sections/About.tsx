@@ -21,7 +21,7 @@ export default function About() {
           {a.values.map((v, i) => (
             <Reveal key={v.title} delay={i * 80}>
               <Spotlight>
-                <div className="h-full rounded-2xl border border-line bg-surface/40 p-5 transition duration-300 hover:border-nova/30">
+                <div className="h-full rounded-2xl border border-line bg-surface/70 p-5 transition duration-300 hover:border-nova/30">
                   <ValueIcon name={v.icon} />
                   <h3 className="mt-4 font-display text-sm font-medium tracking-wide text-nova-soft">
                     {v.title}

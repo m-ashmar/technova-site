@@ -5,11 +5,7 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildStarSamples } from "@/lib/star";
-import {
-  buildPhoneSamples,
-  buildWebSamples,
-  buildWordSamples,
-} from "@/lib/shapes";
+import { buildGraphSamples, buildWordSamples } from "@/lib/shapes";
 import { novaState } from "@/lib/novaState";
 import {
   webglSupported,
@@ -24,8 +20,9 @@ const cursor = { x: -1e4, y: -1e4 };
 
 const vert = /* glsl */ `
   attribute vec3 aScatter;
-  attribute vec3 aPhone;
-  attribute vec3 aWeb;
+  attribute vec3 aGraphA;
+  attribute vec3 aGraphB;
+  attribute float aGraphT;
   attribute vec3 aWord;
   attribute float aSeed;
   attribute float aKind;
@@ -38,26 +35,94 @@ const vert = /* glsl */ `
   uniform vec2 uOffset;
   uniform float uSize;
   uniform float uIdle;
+  uniform float uFlowDir;
   uniform vec2 uMouse;
 
   varying float vSeed;
   varying float vKind;
   varying float vHot;
+  varying float vEnergy;
+  varying float vFade;
 
   float easeOutQuint(float t) { return 1.0 - pow(1.0 - t, 5.0); }
+
+  float hash1(vec3 p) {
+    return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+  }
+
+  /**
+   * Stage 2 — THE FLOW. Not a shape: a current. Particles are dealt into
+   * lanes and travel along them as loose packets, wrapping around forever,
+   * so the stage reads as data in motion rather than an object.
+   */
+  vec3 flowPos(float seed, float time) {
+    float lanes = 7.0;
+    float lane = floor(seed * lanes);
+    float inLane = fract(seed * lanes);
+    float laneY = (lane / (lanes - 1.0) - 0.5) * 1.22;
+
+    float packets = 10.0;
+    float packet = floor(inLane * packets);
+    float inPacket = fract(inLane * packets);
+
+    float speed = 0.13 + 0.06 * fract(seed * 17.0);
+    float t = fract(packet / packets + inPacket * 0.030 + time * speed);
+
+    float x = (t - 0.5) * 3.0 * uFlowDir;
+    float y = laneY + 0.10 * sin(x * 2.0 + lane * 1.9) + (inPacket - 0.5) * 0.045;
+    float z = 0.09 * sin(x * 1.4 + lane * 0.8);
+    return vec3(x, y, z);
+  }
+
+  /** Nodes are never still — each orbits its own base on its own phase. */
+  vec3 nodeDrift(vec3 base, float time) {
+    float ph = hash1(base) * 6.2831;
+    return base + 0.05 * vec3(
+      sin(time * 0.55 + ph),
+      cos(time * 0.47 + ph * 1.3),
+      sin(time * 0.39 + ph * 0.7));
+  }
 
   void main() {
     vSeed = aSeed;
     vKind = aKind;
 
-    // ---- scroll morph chain: star -> phone -> web -> wordmark ----
+    // ---- scroll morph chain: star -> flow -> living graph -> wordmark ----
     float ms = aSeed * 0.18; // per-particle morph stagger
     float m1 = smoothstep(0.0, 1.0, clamp((uMorph - ms) / (1.0 - ms), 0.0, 1.0));
     float m2 = smoothstep(0.0, 1.0, clamp((uMorph - 1.0 - ms) / (1.0 - ms), 0.0, 1.0));
     float m3 = smoothstep(0.0, 1.0, clamp((uMorph - 2.0 - ms) / (1.0 - ms), 0.0, 1.0));
-    vec3 tgt = mix(position, aPhone, m1);
-    tgt = mix(tgt, aWeb, m2);
+
+    // ---- stage 3 — THE LIVING GRAPH ----
+    // Links breathe in and out; when one dies its particles retract into the
+    // node instead of hanging in space, so the network visibly rewires. A
+    // pulse of energy runs the length of every live link.
+    float isEdge = step(0.001, distance(aGraphA, aGraphB));
+    vec3 na = nodeDrift(aGraphA, uTime);
+    vec3 nb = nodeDrift(aGraphB, uTime);
+    float ePh = hash1(aGraphA + aGraphB * 1.7) * 6.2831;
+    float alive = smoothstep(0.25, 0.75, sin(uTime * 0.33 + ePh) * 0.5 + 0.5);
+    float tEdge = aGraphT * mix(1.0, alive, isEdge);
+    vec3 graphP = mix(na, nb, tEdge);
+    // cluster spread lives here, not in the buffer, so a node moves as one
+    vec3 jit = vec3(fract(aSeed * 91.7), fract(aSeed * 37.3), fract(aSeed * 13.1)) - 0.5;
+    graphP += jit * mix(0.048, 0.018, isEdge);
+
+    float head = fract(uTime * 0.45 + ePh * 0.159);
+    float dHead = abs(aGraphT - head);
+    dHead = min(dHead, 1.0 - dHead);
+    float pulse = exp(-dHead * dHead * 140.0) * isEdge * alive;
+
+    vec3 flowP = flowPos(aSeed, uTime);
+
+    vec3 tgt = mix(position, flowP, m1);
+    tgt = mix(tgt, graphP, m2);
     tgt = mix(tgt, aWord, m3);
+
+    // graph effects only apply while the graph is the thing on screen
+    float gw = m2 * (1.0 - m3);
+    vEnergy = pulse * gw;
+    vFade = mix(1.0, mix(0.18, 1.0, alive), isEdge * gw);
 
     // ---- birth: dust -> collapsing core -> shape ----
     float stag = aSeed * 0.30;
@@ -94,7 +159,7 @@ const vert = /* glsl */ `
 
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_PointSize = uSize * (0.55 + 0.9 * fract(aSeed * 3.71))
-      * (1.0 + vHot * 1.6) * (0.6 + 0.4 * uZoom) / max(-mv.z, 0.1);
+      * (1.0 + vHot * 1.6 + vEnergy * 1.3) * (0.6 + 0.4 * uZoom) / max(-mv.z, 0.1);
     gl_Position = projectionMatrix * mv;
   }
 `;
@@ -105,6 +170,8 @@ const frag = /* glsl */ `
   varying float vSeed;
   varying float vKind;
   varying float vHot;
+  varying float vEnergy;
+  varying float vFade;
 
   void main() {
     float d = length(gl_PointCoord - 0.5);
@@ -113,7 +180,9 @@ const frag = /* glsl */ `
     vec3 nova = vec3(0.055, 0.52, 1.0);
     vec3 col = mix(metal, nova, clamp(vKind + 0.38 * fract(vSeed * 5.31), 0.0, 1.0));
     col += vHot;
-    float alpha = disc * (0.5 + 0.5 * fract(vSeed * 2.93));
+    // energy running the links: blue-white, hot enough for bloom to catch it
+    col += vEnergy * vec3(0.45, 0.72, 1.0) * 1.7;
+    float alpha = disc * (0.5 + 0.5 * fract(vSeed * 2.93)) * vFade;
     gl_FragColor = vec4(col, alpha);
   }
 `;
@@ -127,6 +196,7 @@ type NovaUniforms = {
   uOffset: { value: THREE.Vector2 };
   uSize: { value: number };
   uIdle: { value: number };
+  uFlowDir: { value: number };
   uMouse: { value: THREE.Vector2 };
 };
 
@@ -139,15 +209,14 @@ function cssFont(varName: string): string {
 
 function Particles({ count }: { count: number }) {
   const { locale } = useApp();
-  const { targets, scatters, seeds, kinds, phone, web } = useMemo(() => {
+  const { targets, scatters, seeds, kinds, graph } = useMemo(() => {
     const star = buildStarSamples(count);
     return {
       targets: star.targets,
       scatters: star.scatters,
       seeds: star.seeds,
       kinds: star.kinds,
-      phone: buildPhoneSamples(count),
-      web: buildWebSamples(count),
+      graph: buildGraphSamples(count),
     };
   }, [count]);
 
@@ -188,6 +257,7 @@ function Particles({ count }: { count: number }) {
       uOffset: { value: new THREE.Vector2(0, 0) },
       uSize: { value: 10 },
       uIdle: { value: 1 },
+      uFlowDir: { value: 1 },
       uMouse: { value: new THREE.Vector2(99, 99) },
     }),
     []
@@ -224,6 +294,8 @@ function Particles({ count }: { count: number }) {
       novaState.offY * state.viewport.height * 0.5
     );
     u.uSize.value = 7.5 * (state.size.height / 900) * state.viewport.dpr;
+    // the current runs with the reading direction
+    u.uFlowDir.value = locale === "ar" ? -1 : 1;
     // client px -> world units on the z=0 plane
     const nx = (cursor.x / state.size.width) * 2 - 1;
     const ny = (cursor.y / state.size.height) * 2 - 1;
@@ -239,8 +311,9 @@ function Particles({ count }: { count: number }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[targets, 3]} />
         <bufferAttribute attach="attributes-aScatter" args={[scatters, 3]} />
-        <bufferAttribute attach="attributes-aPhone" args={[phone, 3]} />
-        <bufferAttribute attach="attributes-aWeb" args={[web, 3]} />
+        <bufferAttribute attach="attributes-aGraphA" args={[graph.a, 3]} />
+        <bufferAttribute attach="attributes-aGraphB" args={[graph.b, 3]} />
+        <bufferAttribute attach="attributes-aGraphT" args={[graph.t, 1]} />
         <bufferAttribute
           key={`word-${word.v}`}
           attach="attributes-aWord"

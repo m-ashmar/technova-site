@@ -68,7 +68,7 @@ export default function Work() {
         {projects.map((p, i) => (
           <Reveal key={p.slug} delay={i * 60} className="h-full">
             <Spotlight>
-            <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/50 p-7 transition duration-300 hover:border-nova/40 hover:bg-surface">
+            <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/80 p-7 transition duration-300 hover:border-nova/40 hover:bg-surface">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {p.tags.map((tag) => (

@@ -19,7 +19,7 @@ export default function Services() {
         {services.map((svc, i) => (
           <Reveal key={svc.slug} delay={i * 90} className="h-full">
             <Spotlight>
-              <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/60 p-6 transition duration-300 hover:border-nova/40 hover:bg-surface">
+              <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/80 p-6 transition duration-300 hover:border-nova/40 hover:bg-surface">
                 <div className="flex items-start justify-between">
                   <ServiceIcon icon={svc.icon} />
                   <span className="font-mono text-xs text-nova-soft/70">
