@@ -54,9 +54,12 @@ export default function AppProvider({
   const localeRef = useRef<Locale>(defaultLocale);
 
   // Hydrate from whatever the init script / localStorage already decided.
+  // This must be an effect: the server cannot know the visitor's stored
+  // locale, so reading it during render would break hydration.
   useEffect(() => {
     const l = document.documentElement.getAttribute("lang");
     if (isLocale(l)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only locale hydration
       setLocaleState(l);
       localeRef.current = l;
       document.title = bundle.site[l].meta.title;

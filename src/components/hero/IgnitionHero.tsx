@@ -9,6 +9,12 @@ import {
   NOVA_LAYOUT_EVENT,
   NOVA_LIVE_EVENT,
 } from "@/lib/novaState";
+import {
+  webglSupported,
+  SCENE_FAILED_EVENT,
+  SCENE_READY_EVENT,
+} from "@/lib/webgl";
+import { STAR_GLYPH_PATH, STAR_GLYPH_VIEWBOX } from "@/lib/star";
 import { useApp } from "@/components/providers/AppProvider";
 
 type Stage = "init" | "boot" | "birth" | "live";
@@ -32,6 +38,26 @@ export default function IgnitionHero() {
   const gapRef = useRef<HTMLSpanElement>(null);
   const teRef = useRef<HTMLSpanElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const [staticStar, setStaticStar] = useState(false);
+  const sceneReadyRef = useRef(false);
+
+  // No GPU, or the scene threw: draw the logo's star as plain SVG instead.
+  // The capability probe has to happen after mount, never during render, or
+  // the client would disagree with the server's HTML and break hydration.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only capability probe
+    if (!webglSupported()) setStaticStar(true);
+    const onFail = () => setStaticStar(true);
+    const onReady = () => {
+      sceneReadyRef.current = true;
+    };
+    window.addEventListener(SCENE_FAILED_EVENT, onFail);
+    window.addEventListener(SCENE_READY_EVENT, onReady);
+    return () => {
+      window.removeEventListener(SCENE_FAILED_EVENT, onFail);
+      window.removeEventListener(SCENE_READY_EVENT, onReady);
+    };
+  }, []);
 
   // Decide the entry path once, on the client.
   useEffect(() => {
@@ -42,16 +68,17 @@ export default function IgnitionHero() {
       seen = localStorage.getItem(SEEN_KEY) === "1";
     } catch {}
 
-    if (reduced || (seen && !replay)) {
-      novaState.progress = 1;
-      novaState.bloom = 1.15;
-      novaState.idle = reduced ? 0.35 : 1;
-      setStage("live");
-    } else {
-      novaState.progress = 0;
-      novaState.idle = 1;
-      setStage("boot");
-    }
+    // Without a GPU there is nothing to ignite: show the finished hero.
+    // Same reason as above: localStorage, matchMedia and WebGL are all
+    // client-only, so the entry path can only be chosen after mount.
+    const live = reduced || !webglSupported() || (seen && !replay);
+    novaState.progress = live ? 1 : 0;
+    novaState.bloom = 1.15;
+    novaState.idle = live && reduced ? 0.35 : 1;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect --
+       client-only entry decision; reading it during render would desync
+       hydration */
+    setStage(live ? "live" : "boot");
   }, []);
 
   /**
@@ -122,6 +149,28 @@ export default function IgnitionHero() {
     tlRef.current = tl;
   }, [finish]);
 
+  /**
+   * The console has finished; hold it on screen until the renderer exists,
+   * so a slow connection delays the birth instead of the visitor missing it.
+   * Never waits longer than 8 seconds.
+   */
+  const beginBirth = useCallback(() => {
+    const go = () => {
+      setStage("birth");
+      ignite();
+    };
+    if (sceneReadyRef.current || !webglSupported()) return go();
+    const onReady = () => {
+      clearTimeout(timer);
+      go();
+    };
+    const timer = setTimeout(() => {
+      window.removeEventListener(SCENE_READY_EVENT, onReady);
+      go();
+    }, 8000);
+    window.addEventListener(SCENE_READY_EVENT, onReady, { once: true });
+  }, [ignite]);
+
   const skip = useCallback(() => {
     tlRef.current?.kill();
     gsap.killTweensOf(novaState);
@@ -130,6 +179,24 @@ export default function IgnitionHero() {
     novaState.bloom = 1.15;
     finish();
   }, [finish]);
+
+  /**
+   * Safety net: the intro holds the scroll, so it must never be able to hang.
+   * If the sequence has not finished after 14 seconds of *visible* time
+   * (hidden tabs pause the show by design), force the site live.
+   */
+  useEffect(() => {
+    if (stage !== "boot" && stage !== "birth") return;
+    let visibleMs = 0;
+    const id = setInterval(() => {
+      if (!document.hidden) visibleMs += 500;
+      if (visibleMs >= 14000) {
+        clearInterval(id);
+        skip();
+      }
+    }, 500);
+    return () => clearInterval(id);
+  }, [stage, skip]);
 
   // Reveal hero content and announce liveness (covers both entry paths).
   useEffect(() => {
@@ -155,13 +222,7 @@ export default function IgnitionHero() {
       {stage === "init" && <div className="absolute inset-0 z-40 bg-bg" />}
 
       {stage === "boot" && (
-        <BootConsole
-          lines={t.boot.lines}
-          onDone={() => {
-            setStage("birth");
-            ignite();
-          }}
-        />
+        <BootConsole lines={t.boot.lines} onDone={beginBirth} />
       )}
 
       {(stage === "boot" || stage === "birth") && (
@@ -196,9 +257,19 @@ export default function IgnitionHero() {
           <span
             ref={gapRef}
             aria-hidden
-            className="block"
+            className="relative block"
             style={{ width: "clamp(90px, 16vw, 190px)" }}
-          />
+          >
+            {staticStar && (
+              <svg
+                viewBox={STAR_GLYPH_VIEWBOX}
+                className="absolute left-1/2 top-1/2 w-auto -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_0_30px_rgb(10_132_255/60%)]"
+                style={{ height: "calc(clamp(3rem, 9vw, 6.6rem) * 5.36)" }}
+              >
+                <path d={STAR_GLYPH_PATH} fill="#EAF2FF" />
+              </svg>
+            )}
+          </span>
           <span className="justify-self-start font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.14em] text-ink">
             CH
           </span>

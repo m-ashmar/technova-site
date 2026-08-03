@@ -1,6 +1,6 @@
 import { loadContent } from "@/lib/content/loader";
 import AppProvider from "@/components/providers/AppProvider";
-import NovaScene from "@/components/hero/NovaScene";
+import NovaStage from "@/components/hero/NovaStage";
 import ScrollDirector from "@/components/site/ScrollDirector";
 import Nav from "@/components/site/Nav";
 import ScrollProgress from "@/components/site/ScrollProgress";
@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <AppProvider bundle={bundle}>
       {/* the organism: one fixed canvas behind everything, morphing with scroll */}
-      <NovaScene />
+      <NovaStage />
       <ScrollDirector />
       <ScrollProgress />
       <Nav />

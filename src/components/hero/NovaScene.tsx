@@ -11,6 +11,11 @@ import {
   buildWordSamples,
 } from "@/lib/shapes";
 import { novaState } from "@/lib/novaState";
+import {
+  webglSupported,
+  SCENE_FAILED_EVENT,
+  SCENE_READY_EVENT,
+} from "@/lib/webgl";
 import { useApp } from "@/components/providers/AppProvider";
 
 /** Cursor position in client px, fed by a window listener (the canvas itself
@@ -113,6 +118,18 @@ const frag = /* glsl */ `
   }
 `;
 
+type NovaUniforms = {
+  uProgress: { value: number };
+  uMorph: { value: number };
+  uTime: { value: number };
+  uScale: { value: number };
+  uZoom: { value: number };
+  uOffset: { value: THREE.Vector2 };
+  uSize: { value: number };
+  uIdle: { value: number };
+  uMouse: { value: THREE.Vector2 };
+};
+
 function cssFont(varName: string): string {
   const v = getComputedStyle(document.documentElement)
     .getPropertyValue(varName)
@@ -157,7 +174,11 @@ function Particles({ count }: { count: number }) {
     };
   }, [count, locale]);
 
-  const uniforms = useMemo(
+  // One stable uniforms object, handed to the GPU and mutated in place by the
+  // frame loop. That mutation is react-three-fiber's core idiom — the render
+  // loop lives outside React and must never trigger a re-render — so the
+  // compiler's immutability rule is deliberately waived here.
+  const uniforms = useMemo<NovaUniforms>(
     () => ({
       uProgress: { value: novaState.progress },
       uMorph: { value: novaState.morph },
@@ -172,6 +193,9 @@ function Particles({ count }: { count: number }) {
     []
   );
 
+  /* eslint-disable react-hooks/immutability --
+     Writing GPU uniforms in place is react-three-fiber's core idiom: the
+     render loop runs outside React and must never trigger a re-render. */
   useFrame((state, delta) => {
     const u = uniforms;
     u.uTime.value += delta;
@@ -196,6 +220,7 @@ function Particles({ count }: { count: number }) {
       (-ny * state.viewport.height) / 2
     );
   });
+  /* eslint-enable react-hooks/immutability */
 
   return (
     <points frustumCulled={false}>
@@ -267,8 +292,13 @@ export default function NovaScene() {
   const [maxDpr, setMaxDpr] = useState(2);
 
   useEffect(() => {
+    if (!webglSupported()) {
+      window.dispatchEvent(new Event(SCENE_FAILED_EVENT));
+      return;
+    }
     const small = window.innerWidth < 768;
     const weak = (navigator.hardwareConcurrency ?? 8) <= 4;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- device budget is client-only
     setCount(small || weak ? 32000 : 90000);
     // Bloom is fill-rate bound; cap the buffer on phones and weak GPUs.
     setMaxDpr(small || weak ? 1.5 : 2);
@@ -291,6 +321,9 @@ export default function NovaScene() {
         camera={{ fov: 42, position: [0, 0, 3.4] }}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
+          // The hero waits for this before igniting, so a slow chunk on a slow
+          // connection delays the birth rather than the visitor missing it.
+          window.dispatchEvent(new Event(SCENE_READY_EVENT));
           // Allow automatic context restoration (mobile Safari / GPU pressure /
           // hidden-tab eviction): preventDefault on loss lets the browser
           // restore, and three re-uploads GPU resources on the restored event.
