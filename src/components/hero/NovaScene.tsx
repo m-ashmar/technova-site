@@ -196,8 +196,20 @@ function Particles({ count }: { count: number }) {
   /* eslint-disable react-hooks/immutability --
      Writing GPU uniforms in place is react-three-fiber's core idiom: the
      render loop runs outside React and must never trigger a re-render. */
+  /**
+   * Write through the MATERIAL's own uniforms, never the object we passed in.
+   * react-three-fiber does not keep our object by reference — the material
+   * ends up holding a copy — so mutating the local one updated nothing and
+   * the shader rendered forever from the snapshot taken at mount (the star
+   * frozen in whatever pose novaState happened to be in when the canvas
+   * appeared: dust during the intro, a rigid star afterwards).
+   */
+  const matRef = useRef<THREE.ShaderMaterial | null>(null);
+
   useFrame((state, delta) => {
-    const u = uniforms;
+    const mat = matRef.current;
+    if (!mat) return;
+    const u = mat.uniforms as unknown as NovaUniforms;
     u.uTime.value += delta;
     u.uProgress.value = novaState.progress;
     u.uMorph.value = novaState.morph;
@@ -238,6 +250,7 @@ function Particles({ count }: { count: number }) {
         <bufferAttribute attach="attributes-aKind" args={[kinds, 1]} />
       </bufferGeometry>
       <shaderMaterial
+        ref={matRef}
         vertexShader={vert}
         fragmentShader={frag}
         uniforms={uniforms}
