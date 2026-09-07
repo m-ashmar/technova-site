@@ -62,7 +62,8 @@ export default function Nav() {
   }, [menuOpen]);
 
   return (
-    <header
+    <>
+      <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled || menuOpen
           ? "border-b border-line bg-bg/70 backdrop-blur-md"
@@ -124,7 +125,7 @@ export default function Nav() {
           </button>
           <a
             href="#contact"
-            className="hidden rounded-full bg-nova px-4 py-2 text-sm font-medium text-white transition hover:brightness-110 hover:shadow-[0_0_20px_rgb(10_132_255/45%)] sm:inline-flex"
+            className="hidden rounded-full bg-cta px-4 py-2 text-sm font-medium text-white transition hover:brightness-110 hover:shadow-[0_0_20px_rgb(10_132_255/45%)] sm:inline-flex"
           >
             {t.nav.cta}
           </a>
@@ -154,11 +155,19 @@ export default function Nav() {
           </button>
         </div>
       </nav>
+      </header>
 
-      {/* mobile menu */}
+      {/*
+        The panel is deliberately a SIBLING of <header>, not a child. The header
+        gains `backdrop-blur-md` while the menu is open, and `backdrop-filter`
+        makes an element a containing block for its fixed descendants — so
+        `top-16 bottom-0` resolved against the header's 65px box and the panel
+        computed to 0px tall, painting nothing at all on every phone.
+      */}
       <div
         id="mobile-menu"
-        className={`fixed inset-x-0 top-16 bottom-0 z-40 bg-bg/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
+        inert={!menuOpen}
+        className={`fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-bg/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
@@ -187,12 +196,12 @@ export default function Nav() {
           <a
             href="#contact"
             onClick={() => setMenuOpen(false)}
-            className="inline-flex rounded-full bg-nova px-7 py-3 text-sm font-medium text-white shadow-[0_0_28px_rgb(10_132_255/45%)]"
+            className="inline-flex rounded-full bg-cta px-7 py-3 text-sm font-medium text-white shadow-[0_0_28px_rgb(10_132_255/45%)]"
           >
             {t.nav.cta}
           </a>
         </div>
       </div>
-    </header>
+    </>
   );
 }

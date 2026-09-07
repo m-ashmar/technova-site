@@ -405,7 +405,13 @@ function Effects() {
     bloom.current.intensity = novaState.bloom * (1 - 0.62 * stage);
   });
   return (
-    <EffectComposer>
+    // multisampling={0}: the composer defaults to 8x MSAA on a HalfFloat
+    // buffer, silently cancelling the `antialias: false` set on the canvas
+    // below. There is not one hard edge in a soft additive point cloud for
+    // MSAA to smooth, so it bought nothing and cost a multisample attachment
+    // the size of the whole backing store. Purely a cost removal — the image
+    // the shader produces is unchanged.
+    <EffectComposer multisampling={0}>
       <Bloom
         ref={bloom as never}
         mipmapBlur

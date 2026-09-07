@@ -5,6 +5,7 @@ import {
   JetBrains_Mono,
   IBM_Plex_Sans_Arabic,
 } from "next/font/google";
+import { loadContent } from "@/lib/content/loader";
 import "./globals.css";
 
 const display = Orbitron({
@@ -27,36 +28,47 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+// The heaviest family we ship, and only visitors who flip to AR ever paint it.
+// Preloading it stole priority from the Orbitron the hero's LCP text needs, so
+// it now loads on demand; 300/600 are unused anywhere in the styles.
 const arabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ar",
   subsets: ["arabic"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
   display: "swap",
+  preload: false,
 });
 
+// Three hosts serve identical HTML (apex, www, the Vercel domain) and Vercel
+// makes www primary — so every absolute URL we emit must resolve to www or we
+// split our own ranking signals three ways.
+const SITE_URL = "https://www.technovadev.com";
+
+// The <head> reads from the same content engine as the page and the content
+// API: content/site.en.json is the only place these strings are written.
+const { meta } = loadContent().site.en;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://technovadev.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "TechNova — Software & AI Studio",
+    default: meta.title,
     template: "%s · TechNova",
   },
-  description:
-    "Syrian software & AI studio building intelligent apps, web experiences and AI solutions — Solutions That Inspire.",
-  keywords: [
-    "TechNova",
-    "software studio",
-    "AI solutions",
-    "web development",
-    "app development",
-    "Damascus",
-    "Syria",
-  ],
+  description: meta.description,
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "TechNova — Software & AI Studio",
-    description:
-      "Intelligent apps, web experiences and AI solutions. This site is our first demo: it is born in front of you.",
+    title: meta.title,
+    description: meta.description,
+    url: "/",
+    siteName: "TechNova",
     type: "website",
     locale: "en_US",
+  },
+  // No twitter-image file, so X falls back to the generated opengraph-image.
+  twitter: {
+    card: "summary_large_image",
+    title: meta.title,
+    description: meta.description,
   },
 };
 

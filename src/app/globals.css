@@ -7,6 +7,10 @@
   --color-muted: #8a93a6;
   --color-nova: #0a84ff;
   --color-nova-soft: #4d9aff;
+  /* Filled buttons only. White on --color-nova measures 3.65:1, under the
+     4.5:1 AA threshold, and every conversion control used it. The brand blue
+     itself must not move: it is the wordmark and the particle tone. */
+  --color-cta: #0b6fd8;
   --color-line: rgb(255 255 255 / 8%);
   --font-display: var(--font-orbitron);
   --font-sans: var(--font-inter);
@@ -35,6 +39,12 @@ html.lang-ar body {
 html.lang-ar .font-display:not(.brand-mark) {
   font-family: var(--font-ar), sans-serif;
   letter-spacing: 0 !important;
+}
+/* JetBrains Mono has no Arabic coverage, so every mono string — the section
+   eyebrows, the console strip, the boot lines, the status labels — was falling
+   through to whatever font the visitor's OS happened to supply. */
+html.lang-ar .font-mono {
+  font-family: var(--font-jbmono), var(--font-ar), monospace;
 }
 html.lang-ar .ar-tight {
   letter-spacing: 0 !important;
@@ -80,6 +90,17 @@ body::after {
   margin-inline-start: 3px;
   color: var(--color-nova-soft);
   animation: caret-blink 1s steps(1) infinite;
+}
+
+/* The hero's resting state. It used to be Tailwind's `invisible`
+   (visibility:hidden), which only JavaScript could undo — so the headline and
+   both CTAs stayed unrendered until GSAP ran, behind the WebGL bundle, and a
+   reduced-motion visitor was stuck with them forever. Owning it in CSS lets a
+   media query and <noscript> undo it. opacity/transform (never display) keep
+   the box in flow, which is what holds CLS at 0. */
+.hero-in {
+  opacity: 0;
+  transform: translateY(26px);
 }
 
 /* Scroll reveals */
@@ -161,6 +182,7 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { transition: none; opacity: 1; transform: none; }
+  .hero-in { opacity: 1 !important; transform: none !important; }
   .scroll-line { animation: none; }
   .caret::after { animation: none; }
   .icon-draw [data-draw] { transition: none; stroke-dashoffset: 0; }

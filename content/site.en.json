@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "TechNova — Software & AI Studio",
-    "description": "Syrian software & AI studio building intelligent apps, web experiences and AI solutions — Solutions That Inspire."
+    "title": "TechNova — AI, App & Web Studio in Damascus",
+    "description": "AI solutions, apps and web experiences for founders and companies — from Damascus, in Arabic and English. This site is our own work: judge us by it."
   },
   "nav": {
     "links": [
@@ -22,9 +22,9 @@
     "skip": "skip intro"
   },
   "hero": {
-    "eyebrow": "SOFTWARE & AI STUDIO — DAMASCUS",
+    "eyebrow": "AI, APPS & WEB — DAMASCUS STUDIO",
     "tagline": "SOLUTIONS THAT INSPIRE",
-    "statement": "We build intelligent products — AI solutions, apps and web experiences. This website is our first demo: it was born in front of you.",
+    "statement": "We build AI solutions, apps and web experiences for founders and companies — from Damascus. This page isn't a brochure about our work: it is our work, built to the standard we ship for clients.",
     "ctaPrimary": "Start a project",
     "ctaSecondary": "See the work",
     "scrollHint": "SCROLL — THE STAR FOLLOWS"
@@ -66,17 +66,17 @@
         { "icon": "innovation", "title": "Innovation", "body": "We build smart solutions for the future." },
         { "icon": "excellence", "title": "Excellence", "body": "We deliver high-quality digital experiences." },
         { "icon": "reliability", "title": "Reliability", "body": "We create dependable and secure solutions." },
-        { "icon": "partnership", "title": "Partnership", "body": "We grow together with our clients and teams." }
+        { "icon": "partnership", "title": "Partnership", "body": "We grow with the clients we build for." }
       ]
     },
     "signature": { "line": "TECHNOVA — written in stardust" },
     "contact": {
       "eyebrow": "04 — CONTACT",
       "title": "Talk to NOVA",
-      "body": "Our AI takes your idea and turns it into a build-ready brief — the founder reads every single one.",
+      "body": "NOVA asks a few sharp questions and turns your idea into a build-ready brief — the founder reads every single one.",
       "email": "nova@technovadev.com",
       "emailLabel": "or write directly:",
-      "novaNote": "NOVA.intake v1 — scripted core, full intelligence arriving"
+      "novaNote": "NOVA.intake v1 — a guided brief, straight to the founder"
     }
   },
   "nova": {
@@ -116,7 +116,7 @@
         ]
       },
       "contact": {
-        "q": "Where should the founder reach you?",
+        "q": "Before we go further — how can the founder reach you?",
         "placeholder": "Email or WhatsApp…",
         "send": "Send to the founder"
       }

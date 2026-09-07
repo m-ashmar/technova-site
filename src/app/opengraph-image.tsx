@@ -4,7 +4,7 @@ import { loadContent } from "@/lib/content/loader";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "TechNova — Software & AI Studio";
+export const alt = "TechNova — AI, App & Web Studio in Damascus";
 
 /** The share card: the logo lockup on the brand's own black, star and all. */
 export default async function Image() {

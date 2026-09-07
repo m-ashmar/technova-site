@@ -30,6 +30,36 @@ const SEEN_KEY = "nova-ignited";
  */
 const STAR_HALF_SPAN_PER_FONT_PX = (490 / 64) * 0.7 * 0.5;
 
+/**
+ * How long the finished console waits for the renderer before igniting anyway.
+ * Past this the visitor is better served by the finished hero than by more
+ * terminal.
+ */
+const SCENE_READY_GRACE_MS = 2500;
+
+/**
+ * Whether the URL's fragment names a section that actually exists on the page.
+ * A shared link like "…/#contact" was sent to reach that section, so the hero
+ * must not treat the arrival as a plain first visit.
+ */
+function hasHashTarget(): boolean {
+  const raw = window.location.hash.slice(1);
+  if (!raw) return false;
+  let id = raw;
+  try {
+    id = decodeURIComponent(raw);
+  } catch {
+    // A malformed escape is still a literal id worth looking up.
+  }
+  // Only a real content section counts. Matching any id would let "#top" —
+  // the hero itself, and the href of the nav logo, so it lands in the URL after
+  // any in-page click — silently suppress the intro on the next load, and would
+  // treat UI ids like "#mobile-menu" as destinations.
+  if (id === "top") return false;
+  const el = document.getElementById(id);
+  return el instanceof HTMLElement && el.tagName === "SECTION";
+}
+
 export default function IgnitionHero() {
   const { t } = useApp();
   const [stage, setStage] = useState<Stage>("init");
@@ -40,6 +70,9 @@ export default function IgnitionHero() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const [staticStar, setStaticStar] = useState(false);
   const sceneReadyRef = useRef(false);
+  const honourAnchorRef = useRef(false);
+  const finishedRef = useRef(false);
+  const cancelWaitRef = useRef<(() => void) | null>(null);
 
   // No GPU, or the scene threw: draw the logo's star as plain SVG instead.
   // The capability probe has to happen after mount, never during render, or
@@ -63,6 +96,9 @@ export default function IgnitionHero() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const replay = new URLSearchParams(window.location.search).has("boot");
+    // Someone following a link to a section asked for that section, not for
+    // the show — and the intro's scroll-to-top would throw the anchor away.
+    const deepLink = hasHashTarget();
     let seen = false;
     try {
       seen = localStorage.getItem(SEEN_KEY) === "1";
@@ -71,18 +107,25 @@ export default function IgnitionHero() {
     // Without a GPU there is nothing to ignite: show the finished hero.
     // Same reason as above: localStorage, matchMedia and WebGL are all
     // client-only, so the entry path can only be chosen after mount.
-    const live = reduced || !webglSupported() || (seen && !replay);
+    const live = reduced || !webglSupported() || ((seen || deepLink) && !replay);
     novaState.progress = live ? 1 : 0;
     novaState.bloom = 1.15;
     novaState.idle = live && reduced ? 0.35 : 1;
 
     // The intro is the first thing anyone sees, so it starts at the top —
-    // whatever the browser restored or another component scrolled to.
+    // whatever the browser restored or another component scrolled to. A deep
+    // link is the one arrival the browser already got right: leave its jump to
+    // the anchor untouched and hand scroll restoration back to it.
     if (!live) {
       try {
         history.scrollRestoration = "manual";
       } catch {}
       window.scrollTo(0, 0);
+    } else if (deepLink) {
+      honourAnchorRef.current = true;
+      try {
+        history.scrollRestoration = "auto";
+      } catch {}
     }
     /* eslint-disable-next-line react-hooks/set-state-in-effect --
        client-only entry decision; reading it during render would desync
@@ -130,9 +173,11 @@ export default function IgnitionHero() {
     return () => window.removeEventListener("resize", measure);
   }, [stage]);
 
-  // The intro owns the viewport; release scroll when live.
+  // The intro owns the viewport; release scroll when live. A deep-link arrival
+  // has no intro to own it and is already parked at its section, so it is
+  // never locked — clamping the root's scroll could pull it off the anchor.
   useEffect(() => {
-    const lock = stage !== "live";
+    const lock = stage !== "live" && !honourAnchorRef.current;
     document.documentElement.style.overflow = lock ? "hidden" : "";
     return () => {
       document.documentElement.style.overflow = "";
@@ -140,6 +185,9 @@ export default function IgnitionHero() {
   }, [stage]);
 
   const finish = useCallback(() => {
+    finishedRef.current = true;
+    cancelWaitRef.current?.();
+    cancelWaitRef.current = null;
     try {
       localStorage.setItem(SEEN_KEY, "1");
     } catch {}
@@ -161,24 +209,31 @@ export default function IgnitionHero() {
   /**
    * The console has finished; hold it on screen until the renderer exists,
    * so a slow connection delays the birth instead of the visitor missing it.
-   * Never waits longer than 8 seconds.
+   * Never waits longer than SCENE_READY_GRACE_MS.
    */
   const beginBirth = useCallback(() => {
     const go = () => {
+      cancelWaitRef.current?.();
+      cancelWaitRef.current = null;
+      // Skip (or the safety net) can land while this wait is still pending.
+      // Igniting now would re-lock the scroll and tween the formed star back
+      // down to a collapsing core over the live site.
+      if (finishedRef.current) return;
       setStage("birth");
       ignite();
     };
     if (sceneReadyRef.current || !webglSupported()) return go();
-    const onReady = () => {
+    const timer = window.setTimeout(go, SCENE_READY_GRACE_MS);
+    window.addEventListener(SCENE_READY_EVENT, go, { once: true });
+    cancelWaitRef.current = () => {
       clearTimeout(timer);
-      go();
+      window.removeEventListener(SCENE_READY_EVENT, go);
     };
-    const timer = setTimeout(() => {
-      window.removeEventListener(SCENE_READY_EVENT, onReady);
-      go();
-    }, 8000);
-    window.addEventListener(SCENE_READY_EVENT, onReady, { once: true });
   }, [ignite]);
+
+  // The wait outlives the callback that started it: nothing may still be armed
+  // once the hero is gone.
+  useEffect(() => () => cancelWaitRef.current?.(), []);
 
   const skip = useCallback(() => {
     tlRef.current?.kill();
@@ -207,20 +262,39 @@ export default function IgnitionHero() {
     return () => clearInterval(id);
   }, [stage, skip]);
 
-  // Reveal hero content and announce liveness (covers both entry paths).
+  // Reveal hero content and announce liveness (covers every entry path).
   useEffect(() => {
     if (stage !== "live" || !contentRef.current) return;
     const els = contentRef.current.querySelectorAll("[data-reveal]");
-    gsap.fromTo(
-      els,
-      { y: 26, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.09, ease: "power3.out" }
-    );
+    // opacity/y, never autoAlpha: autoAlpha writes `visibility`, which would
+    // fight the .hero-in reduced-motion rule that keeps the copy readable.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(els, { y: 0, opacity: 1 });
+    } else {
+      gsap.fromTo(
+        els,
+        { y: 26, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, stagger: 0.09, ease: "power3.out" }
+      );
+    }
     window.dispatchEvent(new Event(NOVA_LIVE_EVENT));
   }, [stage]);
 
   return (
     <section id="top" className="relative h-[100svh] min-h-[560px] overflow-hidden">
+      {/* With JavaScript off nothing ever animates, so the resting state has to
+          lift itself or the hero renders as an empty black screen. */}
+      <noscript>
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              ".reveal,.hero-in{opacity:1!important;transform:none!important}" +
+              // Only React can unmount the init cover, and with JS off React never
+              // runs — so without this the revealed copy sits under a solid panel.
+              ".hero-cover{display:none!important}",
+          }}
+        />
+      </noscript>
       {/* ignition flash */}
       <div
         ref={flashRef}
@@ -228,7 +302,7 @@ export default function IgnitionHero() {
       />
 
       {/* opaque cover until the client decides boot vs. returning visitor */}
-      {stage === "init" && <div className="absolute inset-0 z-40 bg-bg" />}
+      {stage === "init" && <div className="hero-cover absolute inset-0 z-40 bg-bg" />}
 
       {stage === "boot" && (
         <BootConsole lines={t.boot.lines} onDone={beginBirth} />
@@ -255,7 +329,7 @@ export default function IgnitionHero() {
         <div
           data-reveal
           dir="ltr"
-          className="invisible hidden w-full grid-cols-[1fr_auto_1fr] items-center sm:grid"
+          className="hero-in hidden w-full grid-cols-[1fr_auto_1fr] items-center sm:grid"
         >
           <span
             ref={teRef}
@@ -300,37 +374,37 @@ export default function IgnitionHero() {
         <div className="row-start-3 flex flex-col items-center justify-end gap-5 pb-24 text-center sm:pb-20">
           <p
             data-reveal
-            className="ar-tight invisible font-mono text-[11px] tracking-[0.4em] text-muted"
+            className="ar-tight hero-in font-mono text-[11px] tracking-[0.4em] text-muted"
           >
             {t.hero.eyebrow}
           </p>
           <h1
             data-reveal
             dir="ltr"
-            className="invisible brand-mark font-display text-2xl font-medium tracking-[0.5em] sm:text-3xl"
+            className="hero-in brand-mark font-display text-2xl font-medium tracking-[0.5em] sm:text-3xl"
           >
             <span className="text-ink">TECH</span>
             <span className="text-glow text-nova">NOVA</span>
           </h1>
           <p
             data-reveal
-            className="ar-tight invisible font-mono text-xs uppercase tracking-[0.45em] text-muted"
+            className="ar-tight hero-in font-mono text-xs uppercase tracking-[0.45em] text-muted"
           >
             {t.hero.tagline}
           </p>
           <p
             data-reveal
-            className="invisible max-w-xl text-sm leading-7 text-muted sm:text-base"
+            className="hero-in max-w-xl text-sm leading-7 text-muted sm:text-base"
           >
             {t.hero.statement}
           </p>
           <div
             data-reveal
-            className="pointer-events-auto invisible mt-2 flex flex-wrap items-center justify-center gap-4"
+            className="pointer-events-auto hero-in mt-2 flex flex-wrap items-center justify-center gap-4"
           >
             <a
               href="#contact"
-              className="rounded-full bg-nova px-7 py-3 text-sm font-medium text-white shadow-[0_0_28px_rgb(10_132_255/45%)] transition hover:brightness-110"
+              className="rounded-full bg-cta px-7 py-3 text-sm font-medium text-white shadow-[0_0_28px_rgb(10_132_255/45%)] transition hover:brightness-110"
             >
               {t.hero.ctaPrimary}
             </a>

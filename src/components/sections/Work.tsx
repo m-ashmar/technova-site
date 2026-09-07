@@ -9,10 +9,12 @@ import { NOVA_LAYOUT_EVENT } from "@/lib/novaState";
 
 function EmbedFrame({
   url,
+  title,
   closeLabel,
   onClose,
 }: {
   url: string;
+  title: string;
   closeLabel: string;
   onClose: () => void;
 }) {
@@ -38,10 +40,21 @@ function EmbedFrame({
           ✕ {closeLabel}
         </button>
       </div>
+      {/*
+        An unsandboxed cross-origin frame can navigate its host away, so the
+        embed gets the minimum it needs to boot: scripts, its OWN origin, and
+        target=_blank links. allow-top-navigation is withheld on purpose, and
+        allow="" hands it none of the powerful features (camera, geolocation…).
+        The frame is named for the project — the chrome above already shows the
+        host, and a raw URL makes a poor accessible name.
+      */}
       <iframe
         src={url}
-        title={url}
+        title={title}
         loading="lazy"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+        referrerPolicy="no-referrer"
+        allow=""
         className="aspect-[16/10] w-full bg-black"
       />
     </div>
@@ -116,6 +129,7 @@ export default function Work() {
                 openSlug === p.slug ? (
                   <EmbedFrame
                     url={p.media.embed}
+                    title={p.title}
                     closeLabel={w.closeLabel}
                     onClose={() => toggleEmbed(null)}
                   />

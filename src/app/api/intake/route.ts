@@ -18,6 +18,31 @@ const IntakeSchema = z.object({
   website: z.string().max(200).optional(),
 });
 
+// Only our own pages may post a brief. Without this, any site could make ITS
+// visitors submit from their residential IPs — every one a fresh bucket for
+// the per-IP limiter below, and a real inbox full of forged leads.
+const ALLOWED_ORIGINS = [
+  "https://www.technovadev.com",
+  "https://technovadev.com",
+  // The site is served from its Vercel host too — the production alias and
+  // every preview deployment. Vercel populates both of these at build time;
+  // omitting them 403s the only conversion path on one of our own hosts.
+  ...[
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+  ]
+    .filter(Boolean)
+    .map((host) => `https://${host}`),
+  // dev servers, never trusted in a production deployment
+  ...(process.env.NODE_ENV !== "production"
+    ? ["http://localhost:3000", "http://localhost:3210"]
+    : []),
+];
+
+// A reply_to Resend cannot parse fails the whole send, and the contact answer
+// is free text — visitors often give a WhatsApp number instead of an address.
+const EMAIL_RE = /^[^\s@<>,;"]+@[^\s@<>,;".]+(?:\.[^\s@<>,;".]+)+$/;
+
 // Minimal per-instance rate limit (good enough for v1; serverless instances
 // are short-lived anyway).
 const hits = new Map<string, { n: number; t: number }>();
@@ -36,6 +61,21 @@ function limited(ip: string): boolean {
 }
 
 export async function POST(req: Request) {
+  // text/plain is a CORS "simple request" and ships cross-origin with no
+  // preflight; insisting on JSON forces one, and a foreign origin cannot pass
+  // it because we answer no OPTIONS. Rejections stay vague on purpose.
+  const contentType = req.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return NextResponse.json({ ok: false }, { status: 415 });
+  }
+
+  // Browsers always send Origin on a cross-site POST, so a missing one means a
+  // caller that is not a browser — untrusted either way.
+  const origin = req.headers.get("origin");
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return NextResponse.json({ ok: false }, { status: 403 });
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
   if (limited(ip)) {
     return NextResponse.json({ ok: false }, { status: 429 });
@@ -91,12 +131,23 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         from,
         to: [to],
+        // The mail arrives from our own sender, so without this Reply answers
+        // ourselves. Omitted rather than guessed when the contact is a phone.
+        ...(EMAIL_RE.test(d.contact) ? { reply_to: d.contact } : {}),
         subject: `NOVA intake — ${d.type} (${d.contact})`,
         text,
       }),
     });
-    return NextResponse.json({ ok: true, delivered: res.ok });
-  } catch {
-    return NextResponse.json({ ok: true, delivered: false });
+    if (!res.ok) {
+      // A silent pipeline loses leads without anyone noticing: an expired key
+      // or an unverified sender otherwise looks exactly like a delivered brief.
+      const detail = await res.text().catch(() => "<body unreadable>");
+      console.error(`[intake] Resend rejected the send: ${res.status} ${detail}`);
+      return NextResponse.json({ ok: false, delivered: false }, { status: 502 });
+    }
+    return NextResponse.json({ ok: true, delivered: true });
+  } catch (err) {
+    console.error("[intake] Resend request failed:", err);
+    return NextResponse.json({ ok: false, delivered: false }, { status: 502 });
   }
 }
