@@ -259,7 +259,7 @@ export default function IgnitionHero() {
         >
           <span
             ref={teRef}
-            className="justify-self-end font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink"
+            className="justify-self-end brand-mark font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink"
           >
             TE
           </span>
@@ -292,7 +292,7 @@ export default function IgnitionHero() {
             including the E, so without an equal pad before the C the star
             would sit closer to the C than to the E.
           */}
-          <span className="justify-self-start ps-[0.26em] font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink">
+          <span className="justify-self-start ps-[0.26em] brand-mark font-display text-[clamp(3rem,9vw,6.6rem)] font-medium leading-none tracking-[0.26em] text-ink">
             CH
           </span>
         </div>
@@ -307,7 +307,7 @@ export default function IgnitionHero() {
           <h1
             data-reveal
             dir="ltr"
-            className="invisible font-display text-2xl font-medium tracking-[0.5em] sm:text-3xl"
+            className="invisible brand-mark font-display text-2xl font-medium tracking-[0.5em] sm:text-3xl"
           >
             <span className="text-ink">TECH</span>
             <span className="text-glow text-nova">NOVA</span>

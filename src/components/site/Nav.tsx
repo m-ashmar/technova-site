@@ -85,7 +85,7 @@ export default function Nav() {
           </svg>
           <span
             dir="ltr"
-            className="font-display text-sm font-medium tracking-[0.3em]"
+            className="brand-mark font-display text-sm font-medium tracking-[0.3em]"
           >
             <span className="text-ink">TECH</span>
             <span className="text-nova">NOVA</span>

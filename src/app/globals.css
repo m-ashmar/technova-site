@@ -28,7 +28,11 @@ body {
 html.lang-ar body {
   font-family: var(--font-ar), var(--font-inter), sans-serif;
 }
-html.lang-ar .font-display {
+/* Arabic swaps the display face and drops Latin tracking — but NOT on
+   `.brand-mark`. The TECHNOVA lockup and the TE/CH letters are artwork, not
+   translated text: they must stay Orbitron with their own tracking in every
+   locale, or the logo changes shape when the visitor switches language. */
+html.lang-ar .font-display:not(.brand-mark) {
   font-family: var(--font-ar), sans-serif;
   letter-spacing: 0 !important;
 }
