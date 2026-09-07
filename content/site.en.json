@@ -73,16 +73,16 @@
     "contact": {
       "eyebrow": "04 — CONTACT",
       "title": "Talk to NOVA",
-      "body": "NOVA asks a few sharp questions and turns your idea into a build-ready brief — the founder reads every single one.",
+      "body": "NOVA asks a few sharp questions and turns your idea into a build-ready brief. Every one is read by the team that would build it.",
       "email": "nova@technovadev.com",
       "emailLabel": "or write directly:",
-      "novaNote": "NOVA.intake v1 — a guided brief, straight to the founder"
+      "novaNote": "NOVA.intake v1 — a guided brief, straight to our team"
     }
   },
   "nova": {
     "name": "NOVA",
     "tagline": "TechNova's intake intelligence",
-    "greeting": "Hi — I'm NOVA. I turn ideas into build-ready briefs for the founder. What are we making?",
+    "greeting": "Hi — I'm NOVA. I turn ideas into build-ready briefs for the TechNova team. What are we making?",
     "steps": {
       "type": {
         "q": "Pick a direction:",
@@ -116,9 +116,9 @@
         ]
       },
       "contact": {
-        "q": "Before we go further — how can the founder reach you?",
+        "q": "Before we go further — how do we reach you?",
         "placeholder": "Email or WhatsApp…",
-        "send": "Send to the founder"
+        "send": "Send to the team"
       }
     },
     "recap": {
@@ -132,7 +132,7 @@
       "edit": "Start over"
     },
     "sending": "Transmitting…",
-    "sentTitle": "Received. The founder reads every brief.",
+    "sentTitle": "Received. We read every brief.",
     "sentBody": "Expect a reply within 24 hours.",
     "fallbackNote": "Direct channel not configured yet — one tap sends it by email instead:",
     "fallbackCta": "Send via email",

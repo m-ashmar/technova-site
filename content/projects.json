@@ -1,7 +1,46 @@
 [
   {
-    "slug": "zygnal",
+    "slug": "sbbf-judging",
     "order": 1,
+    "status": "live",
+    "tags": ["Platform", "Real-time", "Live events"],
+    "link": "https://www.syrianbodybuilding.org",
+    "locales": {
+      "en": {
+        "title": "Live Judging Platform — Syrian Bodybuilding & Fitness Federation",
+        "summary": "The federation's official competitions run on it. Judges score from their own tablets, standings recompute live under IFBB placement rules, and judges see only bib numbers — athlete identities are stripped on the server, not hidden in the interface. Scoring that drifts from the panel is flagged as it happens, and published results are frozen and fingerprinted so no one can quietly change a placing after the fact.",
+        "highlight": "Live · every federation championship this season"
+      },
+      "ar": {
+        "title": "منصّة التحكيم المباشر — الاتحاد السوري لبناء الأجسام واللياقة",
+        "summary": "بطولات الاتحاد الرسمية تُدار عليها. كل حكَم يقيّم من جهازه، والترتيب يُحتسب لحظيًا وفق قواعد الترتيب المعتمدة، ولا يرى الحكَم سوى رقم اللاعب — فالهويات تُحجب في الخادم لا في الواجهة. أي تقييم يشذّ عن اللجنة يُرصد فور حدوثه، والنتائج المعتمدة تُجمَّد وتُبصَم رقميًا فلا يمكن تعديل مركزٍ بعد إعلانه.",
+        "highlight": "مباشر · في كل بطولات الاتحاد هذا الموسم"
+      }
+    }
+  },
+  {
+    "slug": "sbbf-web-media",
+    "order": 2,
+    "status": "live",
+    "tags": ["Web", "Commerce", "Bilingual"],
+    "link": "https://www.syrianbodybuilding.org",
+    "media": { "embed": "https://www.syrianbodybuilding.org" },
+    "locales": {
+      "en": {
+        "title": "Federation Website & Athlete Media Store",
+        "summary": "The federation's home online in Arabic and English — news, championship calendar, official documents and a searchable archive of results the federation edits itself, with no developer in the loop. Built onto it is a store where athletes buy the official photographs taken of them: watermarked previews to browse, clean originals released only after purchase. We run the hosting, database and cloud storage behind it.",
+        "highlight": "Live · 48 athlete galleries, 376 photographs"
+      },
+      "ar": {
+        "title": "موقع الاتحاد ومتجر صور اللاعبين",
+        "summary": "بيت الاتحاد على الإنترنت بالعربية والإنكليزية — أخبار وروزنامة بطولات ووثائق رسمية وأرشيف نتائج قابل للبحث يحرّره الاتحاد بنفسه دون الحاجة إلى مبرمج. وإلى جانبه متجر يشتري فيه اللاعبون صورهم الرسمية: معاينات بعلامة مائية للتصفّح، والنسخ الأصلية تُسلَّم بعد الشراء فقط. ونحن ندير الاستضافة وقاعدة البيانات والتخزين السحابي خلفه.",
+        "highlight": "مباشر · ٤٨ معرضًا و٣٧٦ صورة"
+      }
+    }
+  },
+  {
+    "slug": "zygnal",
+    "order": 3,
     "status": "live",
     "tags": ["Web", "3D", "Bilingual"],
     "link": "https://zygnalsy.com",
@@ -20,92 +59,38 @@
     }
   },
   {
-    "slug": "halahello",
-    "order": 2,
-    "status": "live",
+    "slug": "boutique-commerce",
+    "order": 4,
+    "status": "soon",
     "tags": ["E-commerce", "CMS", "Bilingual"],
     "locales": {
       "en": {
-        "title": "Halahello — Boutique Commerce Platform",
-        "summary": "Two brands on one platform: elegant modest fashion and bespoke acrylic creations. Full storefront, cart and checkout, plus a custom-order pipeline that carries a request from quote to production — and a studio where the owners edit everything themselves.",
-        "highlight": "E-commerce · EN/AR"
+        "title": "Boutique Commerce Platform",
+        "summary": "A bilingual storefront for a Damascus boutique running two product lines at once, built to take payment the way Syria actually can: an international card rail alongside a local mobile wallet, reconciled by reference code. Made-to-order pieces move through a real quote-to-production pipeline, and the owner edits products, prices and policies herself. Delivered and production-hardened; launching when the client is ready.",
+        "highlight": "Delivered · awaiting client launch"
       },
       "ar": {
-        "title": "هلاهيلو — منصّة تجارة إلكترونية للعلامات البوتيك",
-        "summary": "علامتان على منصّة واحدة: أزياء محتشمة أنيقة وقطع أكريليك مصنوعة حسب الطلب. متجر متكامل مع سلّة وإتمام شراء، ومسار للطلبات الخاصة يرافق الطلب من التسعير حتى التنفيذ — ولوحة تحرير يضبط بها أصحاب المتجر كل شيء بأنفسهم.",
-        "highlight": "تجارة إلكترونية · عربي/إنكليزي"
+        "title": "منصّة تجارة إلكترونية لمتجر بوتيك",
+        "summary": "متجر إلكتروني بلغتين لبوتيك دمشقي يدير خطّي منتجات في آن واحد، مبنيٌّ ليقبض الثمن بالطريقتين المتاحتين فعلًا في سوريا: بطاقة دولية إلى جانب محفظة محلية تُطابَق برمز مرجعي. والطلبات الخاصة تسير في مسار حقيقي من التسعير إلى التنفيذ، وصاحبة المتجر تحرّر المنتجات والأسعار والسياسات بنفسها. سُلِّم وجُهِّز للإطلاق، وينتظر قرار العميلة.",
+        "highlight": "مُسلَّم · بانتظار إطلاق العميلة"
       }
     }
   },
   {
-    "slug": "sbbf-judging",
-    "order": 3,
-    "status": "live",
-    "tags": ["Platform", "Real-time", "Ops"],
-    "locales": {
-      "en": {
-        "title": "Live Competition Judging System",
-        "summary": "Judging a national championship in real time: judges rank athletes from their own tablets, rounds and call-outs open and close live, and standings recompute the moment the last score lands. Built to survive a dropped connection mid-competition.",
-        "highlight": "Federation-scale · live events"
-      },
-      "ar": {
-        "title": "نظام التحكيم المباشر للبطولات",
-        "summary": "تحكيم بطولة وطنية لحظة بلحظة: كل حكَم يرتّب اللاعبين من جهازه، والجولات والنداءات تُفتح وتُغلق مباشرة، والترتيب يُحتسب فور وصول آخر تقييم. مبنيٌّ ليصمد حتى لو انقطع الاتصال في وسط البطولة.",
-        "highlight": "بحجم اتحاد رياضي · بطولات مباشرة"
-      }
-    }
-  },
-  {
-    "slug": "training-platform",
-    "order": 4,
-    "status": "building",
-    "tags": ["App", "Product"],
-    "locales": {
-      "en": {
-        "title": "Online Training Platform",
-        "summary": "A complete coaching environment: the trainer builds an exercise library, assigns programs, and follows every client from first session to the goal — all online.",
-        "highlight": "Final build"
-      },
-      "ar": {
-        "title": "منصّة تدريب أونلاين",
-        "summary": "بيئة تدريب متكاملة: المدرّب يبني مكتبة تمارينه، ويسنِد البرامج، ويتابع كل عميل من أول حصّة حتى تحقيق الهدف — كل ذلك عبر الإنترنت.",
-        "highlight": "اللمسات الأخيرة"
-      }
-    }
-  },
-  {
-    "slug": "clinic-suite",
+    "slug": "yalla-gym",
     "order": 5,
     "status": "building",
-    "tags": ["App", "Product"],
+    "tags": ["App", "Product", "Our own"],
     "locales": {
       "en": {
-        "title": "Beauty Clinic Suite",
-        "summary": "Clinic operations and services, online — bookings, treatments and client follow-up in one place, with the clinic's own services published to its customers.",
-        "highlight": "Final build"
+        "title": "Yalla Gym — Online Training Platform",
+        "summary": "Our own product, in development: the environment a trainer needs to run clients online. Programmes assembled from an exercise library, sessions tracked set by set, nutrition planning, subscriptions and wallets — the whole operation in one place rather than scattered across chat apps and spreadsheets.",
+        "highlight": "In development"
       },
       "ar": {
-        "title": "منظومة عيادات التجميل",
-        "summary": "إدارة العيادة وخدماتها عبر الإنترنت — الحجوزات والجلسات ومتابعة المراجعين في مكان واحد، مع عرض خدمات العيادة لعملائها.",
-        "highlight": "اللمسات الأخيرة"
-      }
-    }
-  },
-  {
-    "slug": "mouslli",
-    "order": 6,
-    "status": "building",
-    "tags": ["Web", "Commerce"],
-    "locales": {
-      "en": {
-        "title": "Al-Mouslli Sweets — Damascus Storefront",
-        "summary": "Old-Damascus sweets brought online: a menu that stays alive through an owner-run admin panel — add a sweet, upload its photo, and it is on the site. No rebuild, no developer.",
-        "highlight": "Demo delivered"
-      },
-      "ar": {
-        "title": "حلويات المصلي — واجهة دمشقية",
-        "summary": "حلويات الشام القديمة على الإنترنت: قائمة تبقى حيّة عبر لوحة تحكّم يديرها صاحب المحل — أضف صنفًا وارفع صورته فيظهر في الموقع. بلا إعادة بناء، وبلا مبرمج.",
-        "highlight": "نسخة تجريبية مُسلَّمة"
+        "title": "يلا جيم — منصّة التدريب أونلاين",
+        "summary": "منتجنا الخاص، قيد التطوير: البيئة التي يحتاجها المدرّب لإدارة متدرّبيه عبر الإنترنت. برامج تُبنى من مكتبة تمارين، وحصص تُتابَع مجموعةً مجموعة، وتخطيط غذائي، واشتراكات ومحافظ — العملية كاملة في مكان واحد بدل أن تتوزّع بين تطبيقات المحادثة وجداول البيانات.",
+        "highlight": "قيد التطوير"
       }
     }
   }
