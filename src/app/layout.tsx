@@ -35,7 +35,7 @@ const arabic = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://technovasy.com"),
+  metadataBase: new URL("https://technovadev.com"),
   title: {
     default: "TechNova — Software & AI Studio",
     template: "%s · TechNova",

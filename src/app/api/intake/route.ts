@@ -59,7 +59,11 @@ export async function POST(req: Request) {
   }
 
   const key = process.env.RESEND_API_KEY;
-  const to = process.env.INTAKE_TO ?? "nova@technovasy.com";
+  const to = process.env.INTAKE_TO ?? "nova@technovadev.com";
+  // Resend only allows a verified domain as the sender. Until technovadev.com
+  // is verified there, their shared test sender is the one that works — so the
+  // address is an env var and verifying the domain needs no code change.
+  const from = process.env.INTAKE_FROM ?? "NOVA <onboarding@resend.dev>";
   if (!key) {
     return NextResponse.json({ ok: true, delivered: false });
   }
@@ -85,7 +89,7 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "NOVA <onboarding@resend.dev>",
+        from,
         to: [to],
         subject: `NOVA intake — ${d.type} (${d.contact})`,
         text,
