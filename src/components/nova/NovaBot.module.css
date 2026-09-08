@@ -1,14 +1,28 @@
 /*
- * NOVA's face. Static pose by default; every motion and every mood change
- * is gated behind prefers-reduced-motion: no-preference, so a visitor who
- * asked for less movement gets the idle robot and nothing else.
+ * NOVA's body. The perch is a clipped box standing on the terminal's top
+ * rule; the robot lives inside it, so the rule reads as a counter it is
+ * peeking over. Still pose by default; every motion, the rise included, is
+ * gated behind prefers-reduced-motion: no-preference, so a visitor who asked
+ * for less movement gets the robot already in place and nothing else.
  */
+
+.perch {
+  position: absolute;
+  inset-inline-start: 2px;
+  bottom: 100%;
+  width: 64px;
+  height: 54px;
+  overflow: hidden;
+  pointer-events: none;
+}
 
 .bot {
   display: block;
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
+  position: absolute;
+  bottom: -10px;
+  inset-inline-start: 0;
+  width: 64px;
+  height: 64px;
   overflow: visible;
 }
 
@@ -16,9 +30,14 @@
 .eyes,
 .eye,
 .arc,
-.star {
+.star,
+.core {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+.body {
+  transform-origin: 50% 100%;
 }
 
 .arc {
@@ -26,6 +45,18 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* waits under the counter until the chat scrolls in, then rises */
+  .bot {
+    transform: translateY(110%);
+  }
+  .in .bot {
+    transform: translateY(0);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms;
+  }
+
+  .body {
+    transition: transform 400ms ease;
+  }
   .eyes {
     transition: transform 300ms ease;
   }
@@ -37,21 +68,28 @@
   .arc {
     transition: opacity 200ms ease;
   }
-  .star {
+  .star,
+  .core {
     transition:
       transform 300ms ease,
       opacity 300ms ease;
   }
 
-  /* idle: a slow float and a blink every ~4s */
+  /* idle: a slow bob and a blink every ~4s */
   .idle .body {
-    animation: float 6s ease-in-out infinite;
+    animation: bob 5s ease-in-out infinite;
   }
   .idle .eye {
     animation: blink 4s linear infinite;
   }
 
-  /* listening: still, eyes turned toward the field (inline end) */
+  /* listening: leans in toward the field, eyes on it */
+  .listening .body {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+  :global([dir="rtl"]) .listening .body {
+    transform: translateY(-3px) rotate(3deg);
+  }
   .listening .eyes {
     transform: translateX(2px);
   }
@@ -59,8 +97,9 @@
     transform: translateX(-2px);
   }
 
-  /* thinking: the star pulses, the eyes narrow to dots and drift */
-  .thinking .star {
+  /* thinking: the star and the chest core pulse, the eyes narrow and drift */
+  .thinking .star,
+  .thinking .core {
     animation: pulse 1.2s ease-in-out infinite;
   }
   .thinking .eye {
@@ -70,7 +109,10 @@
     animation: drift 1.8s ease-in-out infinite;
   }
 
-  /* happy: eyes crossfade to upward arcs */
+  /* happy: a small hop, eyes crossfade to upward arcs */
+  .happy .body {
+    animation: hop 600ms cubic-bezier(0.22, 1, 0.36, 1) 1;
+  }
   .happy .eye {
     opacity: 0;
   }
@@ -78,13 +120,13 @@
     opacity: 1;
   }
 
-  @keyframes float {
+  @keyframes bob {
     0%,
     100% {
       transform: translateY(0);
     }
     50% {
-      transform: translateY(3px);
+      transform: translateY(2px);
     }
   }
 
@@ -120,6 +162,18 @@
     }
     50% {
       transform: translateX(1.5px);
+    }
+  }
+
+  @keyframes hop {
+    0% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-7px);
+    }
+    100% {
+      transform: translateY(0);
     }
   }
 }

@@ -614,15 +614,17 @@ export default function NovaChat() {
 
   return (
     <div className="text-start">
-      {/* header: the terminal's title line on a rule that carries meaning */}
-      <div className="rule-strong flex items-center justify-between gap-4 pt-3 pb-6">
-        <div className="flex items-center gap-4">
-          <NovaBot mood={mood} />
+      {/* header: the terminal's title line on a rule that carries meaning.
+          NOVA perches behind that rule (absolute, clipped) and rises into
+          view when the chat scrolls in, so the wrapper is the perch's anchor. */}
+      <div className="relative mt-14">
+        <NovaBot mood={mood} />
+        <div className="rule-strong flex items-center justify-between gap-4 pt-3 pb-6">
           <p className="t-label text-muted" dir="ltr">
             {t.sections.contact.terminalHeader}
           </p>
+          <p className="t-label text-nova-soft">{n.name}</p>
         </div>
-        <p className="t-label text-nova-soft">{n.name}</p>
       </div>
 
       {/* thread */}
