@@ -105,7 +105,7 @@ function briefRules(): string[] {
     "Write NOVA's brief for the TechNova team, readable by the visitor too: three to five sentences of plain prose, no headings, no lists, no markdown.",
     "Sentence one names what is being built and for whom. Sentences two to three name the concrete parts to build and any rails or rules the visitor mentioned (constraints, must-haves, exclusions, integrations, compliance).",
     "The last sentence states the one open question or assumption the team should confirm first.",
-    "Mention the budget window label and the timeline label exactly once each, verbatim as given, and never quote prices, amounts, dates or durations beyond those labels.",
+    "The sentence before the last one must state the two labels, copied exactly as given, in this form: Budget window <label>, timeline <label>. Never quote prices, amounts, dates or durations beyond those labels.",
     "Do not ask the visitor anything and do not address them directly.",
   ];
 }
