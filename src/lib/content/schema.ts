@@ -118,6 +118,10 @@ export const SiteContentSchema = z.object({
       thinking: z.string().min(1),
       answerPlaceholder: z.string().min(1),
       skip: z.string().min(1),
+      // Short lines the robot types while it waits for the visitor.
+      lines: z.array(z.string().min(1)).min(3).max(8),
+      summaryTitle: z.string().min(1),
+      summarizing: z.string().min(1),
     }),
   }),
   // One line naming what the company is; no credit slogan.

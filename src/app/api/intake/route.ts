@@ -24,6 +24,13 @@ const IntakeSchema = z.object({
     .transform((s) => s.trim())
     .pipe(z.string().max(6000))
     .optional(),
+  // NOVA's turn-3 brief, when the live turns ran. Sits above the conversation
+  // in the email so the team reads the digest before the transcript.
+  summary: z
+    .string()
+    .transform((s) => s.trim())
+    .pipe(z.string().max(2500))
+    .optional(),
 });
 
 // Only our own pages may post a brief. Without this, any site could make ITS
@@ -127,6 +134,7 @@ export async function POST(req: Request) {
     "",
     "Brief:",
     d.brief,
+    ...(d.summary ? ["", "NOVA's brief:", d.summary] : []),
     ...(d.conversation ? ["", "Conversation:", d.conversation] : []),
   ].join("\n");
 

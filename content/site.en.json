@@ -214,7 +214,16 @@
     "ai": {
       "thinking": "NOVA is reading…",
       "answerPlaceholder": "Your answer…",
-      "skip": "Skip"
+      "skip": "Skip",
+      "lines": [
+        "hi",
+        "I'm NOVA",
+        "tell me your idea",
+        "still here",
+        "what are we building?"
+      ],
+      "summaryTitle": "NOVA's brief",
+      "summarizing": "NOVA is writing the brief…"
     }
   },
   "footer": {

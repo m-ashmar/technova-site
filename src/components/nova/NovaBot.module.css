@@ -1,64 +1,173 @@
 /*
- * NOVA's body. The perch is a clipped box standing on the terminal's top
- * rule; the robot lives inside it, so the rule reads as a counter it is
- * peeking over. Still pose by default; every motion, the rise included, is
- * gated behind prefers-reduced-motion: no-preference, so a visitor who asked
- * for less movement gets the robot already in place and nothing else.
+ * NOVA's stage. It hangs above the terminal's top rule (bottom: 100% of the
+ * header wrapper), the flyer parks at its inline-start corner and the typed
+ * caption sits beside it. Layers, outermost first, so nothing fights:
+ *   .track  mirrored in RTL, so one flight path and one arm serve both
+ *   .flyer  the arrival flight (offset-path) plus the mood / gesture classes
+ *   .drift  the mood pose (listening leans toward the field)
+ *   .bob    the hover
+ *   .gest   whole-body gestures: tilt, hop, roll
+ *   svg     the body; its groups carry the small gestures and the moods
+ * Every motion is transform or opacity and lives behind
+ * prefers-reduced-motion: no-preference; without it the flyer sits in place
+ * and the mood is a still pose.
  */
 
-.perch {
+.stage {
   position: absolute;
-  inset-inline-start: 2px;
+  inset-inline: 0;
   bottom: 100%;
-  width: 64px;
-  height: 54px;
-  overflow: hidden;
+  height: 76px;
   pointer-events: none;
-}
-
-.bot {
-  display: block;
-  position: absolute;
-  bottom: -10px;
-  inset-inline-start: 0;
-  width: 64px;
-  height: 64px;
   overflow: visible;
 }
 
-.body,
+.track {
+  position: absolute;
+  inset: 0;
+}
+:global([dir="rtl"]) .track {
+  transform: scaleX(-1);
+}
+
+.flyer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  height: 72px;
+}
+
+.drift,
+.bob,
+.gest {
+  width: 100%;
+  height: 100%;
+}
+
+.svg {
+  display: block;
+  width: 64px;
+  height: 72px;
+  overflow: visible;
+}
+
+.say {
+  position: absolute;
+  bottom: 12px;
+  inset-inline-start: 80px;
+  margin: 0;
+  font-family: var(--font-jbmono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-inline-start: 0.15em;
+  vertical-align: -0.1em;
+  background: var(--color-nova-soft);
+}
+
+/* SVG parts that move do so about their own box */
 .eyes,
+.lids,
 .eye,
 .arc,
 .star,
-.core {
+.core,
+.arm,
+.spark,
+.thruster,
+.glow {
   transform-box: fill-box;
   transform-origin: center;
 }
-
-.body {
-  transform-origin: 50% 100%;
+.arm {
+  /* the shoulder joint: top centre of the arm's box */
+  transform-origin: 50% 0;
 }
 
 .arc {
   opacity: 0;
 }
+.spark {
+  opacity: 0;
+}
+.glow {
+  opacity: 0.35;
+}
+
+/* the eyes: pointer tracking (--look-*) plus the mood's bias */
+.eyes {
+  transform: translate(
+    calc(var(--look-x, 0px) + var(--eye-bias, 0px)),
+    var(--look-y, 0px)
+  );
+}
+
+/* ---- still poses, shared by both motion settings ---- */
+
+.listening .drift {
+  transform: translateX(10px) rotate(4deg);
+}
+.listening .eyes {
+  --eye-bias: 2px;
+}
+
+.thinking .eye {
+  transform: scaleY(0.35);
+}
+.thinking .thruster {
+  transform: scale(1.4);
+}
+.thinking .glow {
+  opacity: 0.6;
+}
+
+.happy .eye {
+  opacity: 0;
+}
+.happy .arc {
+  opacity: 1;
+}
 
 @media (prefers-reduced-motion: no-preference) {
-  /* waits under the counter until the chat scrolls in, then rises */
-  .bot {
-    transform: translateY(110%);
+  /* unseen until the stage scrolls in and the flight starts */
+  .flyer {
+    opacity: 0;
   }
-  .in .bot {
-    transform: translateY(0);
-    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms;
+  .fly,
+  .in {
+    opacity: 1;
   }
 
-  .body {
-    transition: transform 400ms ease;
+  /* ---- arrival ---- */
+  @supports (offset-path: path("M0 0")) {
+    .fly {
+      offset-path: var(--fly-path, path("M 420 10 C 220 -16, 60 52, 32 40"));
+      offset-rotate: 0deg;
+      animation: arrive 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+  @supports not (offset-path: path("M0 0")) {
+    .fly {
+      animation: arriveFallback 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+
+  /* ---- transitions between moods and looks ---- */
+  .drift {
+    transition: transform 300ms ease;
   }
   .eyes {
-    transition: transform 300ms ease;
+    transition: transform 120ms ease;
   }
   .eye {
     transition:
@@ -68,6 +177,12 @@
   .arc {
     transition: opacity 200ms ease;
   }
+  .thruster {
+    transition: transform 300ms ease;
+  }
+  .glow {
+    transition: opacity 300ms ease;
+  }
   .star,
   .core {
     transition:
@@ -75,58 +190,112 @@
       opacity 300ms ease;
   }
 
-  /* idle: a slow bob and a blink every ~4s */
-  .idle .body {
-    animation: bob 5s ease-in-out infinite;
+  /* ---- hover ---- */
+  .in .bob {
+    animation: bob 4.5s ease-in-out infinite;
   }
-  .idle .eye {
+  .idle .lids,
+  .listening .lids,
+  .happy .lids {
     animation: blink 4s linear infinite;
   }
-
-  /* listening: leans in toward the field, eyes on it */
-  .listening .body {
-    transform: translateY(-3px) rotate(-3deg);
-  }
-  :global([dir="rtl"]) .listening .body {
-    transform: translateY(-3px) rotate(3deg);
-  }
-  .listening .eyes {
-    transform: translateX(2px);
-  }
-  :global([dir="rtl"]) .listening .eyes {
-    transform: translateX(-2px);
+  .idle .glow,
+  .listening .glow,
+  .happy .glow {
+    animation: flicker 0.9s ease-in-out infinite;
   }
 
-  /* thinking: the star and the chest core pulse, the eyes narrow and drift */
+  /* ---- thinking: flare, pulse, narrowed eyes drifting ---- */
   .thinking .star,
   .thinking .core {
     animation: pulse 1.2s ease-in-out infinite;
-  }
-  .thinking .eye {
-    transform: scaleY(0.35);
   }
   .thinking .eyes {
     animation: drift 1.8s ease-in-out infinite;
   }
 
-  /* happy: a small hop, eyes crossfade to upward arcs */
-  .happy .body {
-    animation: hop 600ms cubic-bezier(0.22, 1, 0.36, 1) 1;
-  }
-  .happy .eye {
-    opacity: 0;
-  }
+  /* ---- happy: the roll comes from the g-roll class, then arcs and sparks ---- */
+  .happy .eye,
   .happy .arc {
-    opacity: 1;
+    transition-delay: 900ms;
+  }
+  .happy .spark {
+    animation: spark 700ms ease-out 900ms 1 forwards;
+  }
+
+  /* ---- gestures, each on an element no mood animates ---- */
+  .g-wave .arm {
+    animation: gWave 1.6s ease-in-out;
+  }
+  .g-look .eyes {
+    animation: gLook 1.4s ease-in-out;
+  }
+  .g-tilt .gest {
+    animation: gTilt 1.2s ease-in-out;
+  }
+  .g-blink2 .lids {
+    animation: gBlink2 0.6s ease-in-out;
+  }
+  .g-spin .star {
+    animation: gSpin 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .g-hop .gest {
+    animation: gHop 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .g-roll .gest {
+    animation: gRoll 1.1s cubic-bezier(0.45, 0, 0.2, 1);
+  }
+
+  /* thruster flare: flight, thinking, hop and roll (after flicker, so it wins) */
+  .fly .thruster,
+  .g-hop .thruster,
+  .g-roll .thruster {
+    transform: scale(1.4);
+  }
+  .fly .glow,
+  .thinking .glow,
+  .g-hop .glow,
+  .g-roll .glow {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .caret {
+    animation: caret 1s step-end infinite;
+  }
+
+  /* ---- keyframes ---- */
+  @keyframes arrive {
+    from {
+      offset-distance: 0%;
+    }
+    to {
+      offset-distance: 100%;
+    }
+  }
+
+  @keyframes arriveFallback {
+    from {
+      transform: translate(var(--fly-dx, 380px), -30px);
+    }
+    to {
+      transform: translate(0, 0);
+    }
   }
 
   @keyframes bob {
     0%,
     100% {
-      transform: translateY(0);
+      transform: translateY(0) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-1.5px) rotate(1deg);
     }
     50% {
-      transform: translateY(2px);
+      transform: translateY(-3px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(-1.5px) rotate(-1deg);
     }
   }
 
@@ -140,6 +309,34 @@
     }
     95.5% {
       transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes flicker {
+    0%,
+    100% {
+      transform: scale(0.95);
+      opacity: 0.3;
+    }
+    20% {
+      transform: scale(1.1);
+      opacity: 0.42;
+    }
+    35% {
+      transform: scale(0.9);
+      opacity: 0.25;
+    }
+    55% {
+      transform: scale(1.15);
+      opacity: 0.45;
+    }
+    70% {
+      transform: scale(1);
+      opacity: 0.33;
+    }
+    85% {
+      transform: scale(1.05);
+      opacity: 0.4;
     }
   }
 
@@ -165,15 +362,129 @@
     }
   }
 
-  @keyframes hop {
+  @keyframes spark {
     0% {
+      opacity: 1;
+      transform: rotate(var(--a)) translateY(-12px);
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(var(--a)) translateY(-18px);
+    }
+  }
+
+  @keyframes caret {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* arm up to about -150deg, three swings of +-15deg, back down */
+  @keyframes gWave {
+    0% {
+      transform: rotate(0deg);
+    }
+    18% {
+      transform: rotate(-150deg);
+    }
+    30% {
+      transform: rotate(-135deg);
+    }
+    42% {
+      transform: rotate(-165deg);
+    }
+    54% {
+      transform: rotate(-135deg);
+    }
+    66% {
+      transform: rotate(-165deg);
+    }
+    78% {
+      transform: rotate(-150deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes gLook {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    22%,
+    42% {
+      transform: translate(2.5px, 0.5px);
+    }
+    62%,
+    82% {
+      transform: translate(-2.5px, 0.5px);
+    }
+  }
+
+  @keyframes gTilt {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    40% {
+      transform: rotate(7deg);
+    }
+  }
+
+  @keyframes gBlink2 {
+    0%,
+    36%,
+    72%,
+    100% {
+      transform: scaleY(1);
+    }
+    18%,
+    54% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes gSpin {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(1.35);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+
+  @keyframes gHop {
+    0%,
+    100% {
       transform: translateY(0);
     }
     40% {
-      transform: translateY(-7px);
+      transform: translateY(-10px);
+    }
+    72% {
+      transform: translateY(1.5px);
+    }
+  }
+
+  @keyframes gRoll {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(0.92);
     }
     100% {
-      transform: translateY(0);
+      transform: rotate(360deg) scale(1);
     }
   }
 }

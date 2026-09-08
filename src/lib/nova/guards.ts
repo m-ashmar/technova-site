@@ -52,3 +52,15 @@ export function createLimiter(limit: number, windowMs: number) {
     return h.n > limit;
   };
 }
+
+/**
+ * Per-instance circuit breaker: a single fixed-window counter over every
+ * model call this instance makes, regardless of caller. Trips to "busy"
+ * rather than letting a distributed burst run up the bill.
+ */
+export function createBreaker(cap: number, windowMs: number) {
+  const count = createLimiter(cap, windowMs);
+  return function tripped(): boolean {
+    return count("*");
+  };
+}
