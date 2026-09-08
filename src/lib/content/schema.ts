@@ -113,6 +113,12 @@ export const SiteContentSchema = z.object({
     fallbackCta: z.string().min(1),
     errorNote: z.string().min(1),
     restart: z.string().min(1),
+    // The live NOVA turn (Claude) inside the brief step; keys are static UI.
+    ai: z.object({
+      thinking: z.string().min(1),
+      answerPlaceholder: z.string().min(1),
+      skip: z.string().min(1),
+    }),
   }),
   // One line naming what the company is; no credit slogan.
   footer: z.object({ rights: z.string().min(1), tagline: z.string().min(1) }),

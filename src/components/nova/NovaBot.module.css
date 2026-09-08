@@ -1,0 +1,125 @@
+/*
+ * NOVA's face. Static pose by default; every motion and every mood change
+ * is gated behind prefers-reduced-motion: no-preference, so a visitor who
+ * asked for less movement gets the idle robot and nothing else.
+ */
+
+.bot {
+  display: block;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.body,
+.eyes,
+.eye,
+.arc,
+.star {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.arc {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .eyes {
+    transition: transform 300ms ease;
+  }
+  .eye {
+    transition:
+      transform 300ms ease,
+      opacity 200ms ease;
+  }
+  .arc {
+    transition: opacity 200ms ease;
+  }
+  .star {
+    transition:
+      transform 300ms ease,
+      opacity 300ms ease;
+  }
+
+  /* idle: a slow float and a blink every ~4s */
+  .idle .body {
+    animation: float 6s ease-in-out infinite;
+  }
+  .idle .eye {
+    animation: blink 4s linear infinite;
+  }
+
+  /* listening: still, eyes turned toward the field (inline end) */
+  .listening .eyes {
+    transform: translateX(2px);
+  }
+  :global([dir="rtl"]) .listening .eyes {
+    transform: translateX(-2px);
+  }
+
+  /* thinking: the star pulses, the eyes narrow to dots and drift */
+  .thinking .star {
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .thinking .eye {
+    transform: scaleY(0.35);
+  }
+  .thinking .eyes {
+    animation: drift 1.8s ease-in-out infinite;
+  }
+
+  /* happy: eyes crossfade to upward arcs */
+  .happy .eye {
+    opacity: 0;
+  }
+  .happy .arc {
+    opacity: 1;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+  }
+
+  /* 120ms blink at the end of a 4s cycle: 60ms down, 60ms up */
+  @keyframes blink {
+    0%,
+    94%,
+    97%,
+    100% {
+      transform: scaleY(1);
+    }
+    95.5% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.35);
+      opacity: 0.55;
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translateX(-1.5px);
+    }
+    50% {
+      transform: translateX(1.5px);
+    }
+  }
+}

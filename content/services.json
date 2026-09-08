@@ -18,11 +18,11 @@
     "locales": {
       "en": {
         "title": "AI Solutions",
-        "body": "Agents, assistants and pipelines built on current models and connected to the systems you already run — an intake like NOVA, a search over your files, a step that no longer needs a person."
+        "body": "Agents, assistants and pipelines built on current models and connected to the systems you already run: an intake like NOVA, a search over your files, a step that no longer needs a person."
       },
       "ar": {
         "title": "حلول الذكاء الاصطناعي",
-        "body": "وكلاء ومساعدون وخطوط معالجة مبنية على النماذج الحالية وموصولة بالأنظمة التي تعمل بها أصلًا — استقبال مثل نوفا، وبحث في ملفاتك، وخطوة لم تعد تحتاج إلى شخص."
+        "body": "وكلاء ومساعدون وخطوط معالجة مبنية على النماذج الحالية وموصولة بالأنظمة التي تعمل بها أصلًا: استقبال مثل نوفا، وبحث في ملفاتك، وخطوة لم تعد تحتاج إلى شخص."
       }
     }
   },
@@ -45,11 +45,11 @@
     "locales": {
       "en": {
         "title": "Apps & Platforms",
-        "body": "Full products from the database to the store listing: judging panels, training platforms, clinic management — with the admin the owner runs without calling us."
+        "body": "Full products from the database to the store listing: judging panels, training platforms, clinic management, with the admin the owner runs without calling us."
       },
       "ar": {
         "title": "التطبيقات والمنصّات",
-        "body": "منتجات كاملة من قاعدة البيانات إلى المتجر: لجان تحكيم، ومنصّات تدريب، وإدارة عيادات — مع لوحة إدارة يشغّلها صاحبها دون أن يتصل بنا."
+        "body": "منتجات كاملة من قاعدة البيانات إلى المتجر: لجان تحكيم، ومنصّات تدريب، وإدارة عيادات، مع لوحة إدارة يشغّلها صاحبها دون أن يتصل بنا."
       }
     }
   },
@@ -99,11 +99,11 @@
     "locales": {
       "en": {
         "title": "Automation & Integration",
-        "body": "Pipelines, dashboards and the glue between your tools — payment reconciliation, photo delivery on purchase, results published the moment they are frozen."
+        "body": "Pipelines, dashboards and the glue between your tools: payment reconciliation, photo delivery on purchase, results published the moment they are frozen."
       },
       "ar": {
         "title": "الأتمتة والتكامل",
-        "body": "خطوط بيانات ولوحات متابعة ووصلات بين أدواتك — مطابقة المدفوعات، وتسليم الصور عند الشراء، ونشر النتائج لحظة تجميدها."
+        "body": "خطوط بيانات ولوحات متابعة ووصلات بين أدواتك: مطابقة المدفوعات، وتسليم الصور عند الشراء، ونشر النتائج لحظة تجميدها."
       }
     }
   }

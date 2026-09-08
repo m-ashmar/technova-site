@@ -14,17 +14,25 @@ const IntakeSchema = z.object({
   timeline: z.string().max(60),
   contact: z.string().min(3).max(200),
   locale: z.enum(["en", "ar"]),
-  // honeypot — humans never fill it
+  // honeypot, humans never fill it
   website: z.string().max(200).optional(),
+  // The live NOVA exchange inside the brief step, when it happened. Appended
+  // to the email under its own heading; absent when the turn was skipped or
+  // the assistant was unconfigured.
+  conversation: z
+    .string()
+    .transform((s) => s.trim())
+    .pipe(z.string().max(6000))
+    .optional(),
 });
 
 // Only our own pages may post a brief. Without this, any site could make ITS
-// visitors submit from their residential IPs — every one a fresh bucket for
+// visitors submit from their residential IPs, every one a fresh bucket for
 // the per-IP limiter below, and a real inbox full of forged leads.
 const ALLOWED_ORIGINS = [
   "https://www.technovadev.com",
   "https://technovadev.com",
-  // The site is served from its Vercel host too — the production alias and
+  // The site is served from its Vercel host too, the production alias and
   // every preview deployment. Vercel populates both of these at build time;
   // omitting them 403s the only conversion path on one of our own hosts.
   ...[
@@ -40,7 +48,7 @@ const ALLOWED_ORIGINS = [
 ];
 
 // A reply_to Resend cannot parse fails the whole send, and the contact answer
-// is free text — visitors often give a WhatsApp number instead of an address.
+// is free text, visitors often give a WhatsApp number instead of an address.
 const EMAIL_RE = /^[^\s@<>,;"]+@[^\s@<>,;".]+(?:\.[^\s@<>,;".]+)+$/;
 
 // Minimal per-instance rate limit (good enough for v1; serverless instances
@@ -70,7 +78,7 @@ export async function POST(req: Request) {
   }
 
   // Browsers always send Origin on a cross-site POST, so a missing one means a
-  // caller that is not a browser — untrusted either way.
+  // caller that is not a browser, untrusted either way.
   const origin = req.headers.get("origin");
   if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
     return NextResponse.json({ ok: false }, { status: 403 });
@@ -101,7 +109,7 @@ export async function POST(req: Request) {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.INTAKE_TO ?? "nova@technovadev.com";
   // Resend only allows a verified domain as the sender. Until technovadev.com
-  // is verified there, their shared test sender is the one that works — so the
+  // is verified there, their shared test sender is the one that works, so the
   // address is an env var and verifying the domain needs no code change.
   const from = process.env.INTAKE_FROM ?? "NOVA <onboarding@resend.dev>";
   if (!key) {
@@ -119,6 +127,7 @@ export async function POST(req: Request) {
     "",
     "Brief:",
     d.brief,
+    ...(d.conversation ? ["", "Conversation:", d.conversation] : []),
   ].join("\n");
 
   try {
@@ -134,7 +143,7 @@ export async function POST(req: Request) {
         // The mail arrives from our own sender, so without this Reply answers
         // ourselves. Omitted rather than guessed when the contact is a phone.
         ...(EMAIL_RE.test(d.contact) ? { reply_to: d.contact } : {}),
-        subject: `NOVA intake — ${d.type} (${d.contact})`,
+        subject: `NOVA intake: ${d.type} (${d.contact})`,
         text,
       }),
     });

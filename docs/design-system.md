@@ -119,7 +119,7 @@ Nothing else gets a filled background.
 ## 5. Sections
 
 ### Work (`#work`) — five acts
-Opener: a single `.t-label` "01 — Work" on a `line-strong` rule, then the
+Opener: a single `.t-label` "01 / Work" on a `line-strong` rule, then the
 title in `.t-statement` on the left 7 columns, and the lead in `.t-lead` on the
 right 4 columns (offset by one). Nothing else.
 
@@ -145,7 +145,7 @@ The embed (`EmbedFrame`) keeps its exact sandbox attributes and the
 `NOVA_LAYOUT_EVENT` dispatch on toggle.
 
 ### Capabilities (`#services`) — four rows
-Opener: `.t-label` "02 — Capabilities" on a rule; **no title**. The rows are
+Opener: `.t-label` "02 / Capabilities" on a rule; **no title**. The rows are
 the title. The organism (living graph) sits in cols 1–5; the rows fill cols
 6–12. Each row: the drawn glyph (`ServiceIcon`, 28px, inline-start), the name
 in `.t-row`, and on the same row's end a `.t-label` index. Below the name, the
@@ -155,7 +155,7 @@ the rule to `line-strong` and the glyph plays its draw animation. No cards, no
 expand/collapse JS — everything is visible.
 
 ### Studio (`#about`) — one statement, a numbers row, how we work
-Opener: `.t-label` "03 — Studio" on a rule. Then the statement in
+Opener: `.t-label` "03 / Studio" on a rule. Then the statement in
 `.t-statement` across cols 1–8 (the organism drifts to cols 9–12). Under it a
 numbers row: four facts, each `.t-title` value over `.t-label` label, on a
 shared top rule, no boxes. Then "How we work": three steps across cols 1–12,
@@ -165,11 +165,11 @@ vertical hairlines on desktop. No value cards. No icons.
 ### Signature (`#signature`) — sealed.
 
 ### Contact (`#contact`) — NOVA as the site's terminal
-`.grid-12`: cols 1–5 is the invitation: `.t-label` "04 — Contact" on a rule,
+`.grid-12`: cols 1–5 is the invitation: `.t-label` "04 / Contact" on a rule,
 "Start a project" in `.t-statement`, the body in `.t-body`, the email as a
 `.t-row` display link, and the reply promise as `.t-label`. Cols 6–12 is the
 terminal: a `line-strong` top rule with a mono header line
-(`nova.intake — v1`), then `NovaChat`. The terminal has **no border and no
+(`nova.intake v1`), then `NovaChat`. The terminal has **no border and no
 fill**; NOVA's lines carry a 4-pointed star glyph in `nova-soft` at the start;
 the visitor's lines are `ink`, aligned to the end; option buttons are hairline
 pills in `.t-label`; the text field is a bottom rule with a blinking caret

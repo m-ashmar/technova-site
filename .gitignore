@@ -8,3 +8,6 @@ next-env.d.ts
 .DS_Store
 npm-debug.log*
 .vercel
+
+# the template is safe to commit; real keys live only in .env.local
+!.env.example

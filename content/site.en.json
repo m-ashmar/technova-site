@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "TechNova — AI, App & Web Studio in Damascus",
-    "description": "AI solutions, apps and web experiences for founders and companies — from Damascus, in Arabic and English. This site is our own work: judge us by it."
+    "title": "TechNova · AI, App & Web Studio in Damascus",
+    "description": "AI solutions, apps and web experiences for founders and companies, from Damascus, in Arabic and English. This site is our own work: judge us by it."
   },
   "nav": {
     "links": [
@@ -34,17 +34,17 @@
     "skip": "skip intro"
   },
   "hero": {
-    "eyebrow": "AI, APPS & WEB — DAMASCUS STUDIO",
+    "eyebrow": "AI, APPS & WEB · DAMASCUS STUDIO",
     "tagline": "SOLUTIONS THAT INSPIRE",
-    "statement": "We build AI solutions, apps and web experiences for founders and companies — from Damascus. This page isn't a brochure about our work: it is our work, built to the standard we ship for clients.",
+    "statement": "We build AI solutions, apps and web experiences for founders and companies, from Damascus. This page isn't a brochure about our work: it is our work, built to the standard we ship for clients.",
     "ctaPrimary": "Start a project",
     "ctaSecondary": "See the work",
-    "scrollHint": "SCROLL — THE STAR FOLLOWS"
+    "scrollHint": "SCROLL · THE STAR FOLLOWS"
   },
   "console": {
-    "online": "> nova.core online — all systems nominal",
+    "online": "> nova.core online · all systems nominal",
     "sections": {
-      "work": "> rendering work — five builds loaded",
+      "work": "> rendering work · five builds loaded",
       "services": "> capabilities online",
       "about": "> studio: damascus · ar/en",
       "signature": "> signature: stardust",
@@ -53,10 +53,10 @@
   },
   "sections": {
     "services": {
-      "eyebrow": "02 — CAPABILITIES"
+      "eyebrow": "02 / CAPABILITIES"
     },
     "work": {
-      "eyebrow": "01 — WORK",
+      "eyebrow": "01 / WORK",
       "title": "Built, shipped, running.",
       "lead": "Five products: a federation's live judging panel, its website and photo store, a telecom portfolio, a boutique's storefront, and our own training platform.",
       "playLabel": "RUN LIVE",
@@ -69,8 +69,8 @@
       }
     },
     "about": {
-      "eyebrow": "03 — STUDIO",
-      "statement": "We build the software that runs real operations — scoring panels, storefronts, federations — from Damascus, in Arabic and English.",
+      "eyebrow": "03 / STUDIO",
+      "statement": "We build the software that runs real operations: scoring panels, storefronts, federations. From Damascus, in Arabic and English.",
       "facts": [
         {
           "value": "Damascus",
@@ -99,7 +99,7 @@
         {
           "n": "02",
           "title": "Build",
-          "body": "We ship in working slices you can open on your phone — database, interface and admin land together, not as a deck."
+          "body": "We ship in working slices you can open on your phone. Database, interface and admin land together, not as a deck."
         },
         {
           "n": "03",
@@ -109,20 +109,20 @@
       ]
     },
     "signature": {
-      "line": "TECHNOVA — written in stardust"
+      "line": "TECHNOVA"
     },
     "contact": {
-      "eyebrow": "04 — CONTACT",
+      "eyebrow": "04 / CONTACT",
       "statementTitle": "Start a project",
       "body": "NOVA asks a few sharp questions and turns your idea into a build-ready brief. Every one is read by the team that would build it.",
       "email": "nova@technovadev.com",
       "reply": "We reply within one working day",
-      "terminalHeader": "nova.intake — v1"
+      "terminalHeader": "nova.intake v1"
     }
   },
   "nova": {
     "name": "NOVA",
-    "greeting": "Hi — I'm NOVA. I turn ideas into build-ready briefs for the TechNova team. What are we making?",
+    "greeting": "Hi, I'm NOVA. I turn ideas into build-ready briefs for the TechNova team. What are we making?",
     "steps": {
       "type": {
         "q": "Pick a direction:",
@@ -146,7 +146,7 @@
         ]
       },
       "brief": {
-        "q": "Tell me about it — a few sentences are enough.",
+        "q": "Tell me about it. A few sentences are enough.",
         "placeholder": "The idea, who it's for, what it must do…",
         "next": "Continue"
       },
@@ -189,7 +189,7 @@
         ]
       },
       "contact": {
-        "q": "Before we go further — how do we reach you?",
+        "q": "Before we go further, how do we reach you?",
         "placeholder": "Email or WhatsApp…",
         "send": "Send to the team"
       }
@@ -207,13 +207,18 @@
     "sending": "Transmitting…",
     "sentTitle": "Received. We read every brief.",
     "sentBody": "Expect a reply within 24 hours.",
-    "fallbackNote": "Direct channel not configured yet — one tap sends it by email instead:",
+    "fallbackNote": "Direct channel not configured yet. One tap sends it by email instead:",
     "fallbackCta": "Send via email",
-    "errorNote": "Transmission failed — try again, or email us directly below.",
-    "restart": "New brief"
+    "errorNote": "Transmission failed. Try again, or email us directly below.",
+    "restart": "New brief",
+    "ai": {
+      "thinking": "NOVA is reading…",
+      "answerPlaceholder": "Your answer…",
+      "skip": "Skip"
+    }
   },
   "footer": {
-    "rights": "© TechNova — Damascus, Syria",
+    "rights": "© TechNova, Damascus, Syria",
     "tagline": "A software and AI studio in Damascus, building in Arabic and English."
   }
 }

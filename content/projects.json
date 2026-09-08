@@ -46,13 +46,13 @@
     ],
     "locales": {
       "en": {
-        "title": "Live Judging Platform — Syrian Bodybuilding & Fitness Federation",
-        "summary": "The federation's official competitions run on it. Judges score from their own tablets, standings recompute live under IFBB placement rules, and judges see only bib numbers — athlete identities are stripped on the server, not hidden in the interface. Scores that drift from the panel are flagged as they happen, and published results are frozen and fingerprinted so no one can quietly change a placing after the fact.",
+        "title": "Live Judging Platform for the Syrian Arab Bodybuilding & Fitness Federation",
+        "summary": "The federation's official competitions run on it. Judges score from their own tablets, standings recompute live under IFBB placement rules, and judges see only bib numbers: athlete identities are stripped on the server, not hidden in the interface. Scores that drift from the panel are flagged as they happen, and published results are frozen and fingerprinted so no one can quietly change a placing after the fact.",
         "highlight": "Live · every federation championship"
       },
       "ar": {
-        "title": "منصّة التحكيم المباشر — الاتحاد السوري لبناء الأجسام واللياقة",
-        "summary": "بطولات الاتحاد الرسمية تُدار عليها. كل حكَم يقيّم من جهازه، والترتيب يُحتسب لحظيًا وفق قواعد الترتيب المعتمدة، ولا يرى الحكَم سوى رقم اللاعب — فالهويات تُحجب في الخادم لا في الواجهة. أي تقييم يشذّ عن اللجنة يُرصد فور حدوثه، والنتائج المعتمدة تُجمَّد وتُبصَم رقميًا فلا يمكن تعديل مركزٍ بعد إعلانه.",
+        "title": "منصّة التحكيم المباشر للاتحاد العربي السوري لبناء الأجسام واللياقة",
+        "summary": "بطولات الاتحاد الرسمية تُدار عليها. كل حكَم يقيّم من جهازه، والترتيب يُحتسب لحظيًا وفق قواعد الترتيب المعتمدة، ولا يرى الحكَم سوى رقم اللاعب، فالهويات تُحجب في الخادم لا في الواجهة. أي تقييم يشذّ عن اللجنة يُرصد فور حدوثه، والنتائج المعتمدة تُجمَّد وتُبصَم رقميًا فلا يمكن تعديل مركزٍ بعد إعلانه.",
         "highlight": "مباشر · في كل بطولات الاتحاد"
       }
     }
@@ -105,12 +105,12 @@
     "locales": {
       "en": {
         "title": "Federation Website & Athlete Media Store",
-        "summary": "The federation's home online in Arabic and English — news, championship calendar, official documents and a searchable archive of results the federation edits itself, with no developer in the loop. Built onto it is a store where athletes buy the official photographs taken of them: watermarked previews to browse, clean originals released only after purchase. We run the hosting, database and cloud storage behind it.",
+        "summary": "The federation's home online in Arabic and English: news, championship calendar, official documents and a searchable archive of results the federation edits itself, with no developer in the loop. Built onto it is a store where athletes buy the official photographs taken of them: watermarked previews to browse, clean originals released only after purchase. We run the hosting, database and cloud storage behind it.",
         "highlight": "Live · the official photo store runs on it"
       },
       "ar": {
         "title": "موقع الاتحاد ومتجر صور اللاعبين",
-        "summary": "بيت الاتحاد على الإنترنت بالعربية والإنكليزية — أخبار وروزنامة بطولات ووثائق رسمية وأرشيف نتائج قابل للبحث يحرّره الاتحاد بنفسه دون الحاجة إلى مبرمج. وإلى جانبه متجر يشتري فيه اللاعبون صورهم الرسمية: معاينات بعلامة مائية للتصفّح، والنسخ الأصلية تُسلَّم بعد الشراء فقط. ونحن ندير الاستضافة وقاعدة البيانات والتخزين السحابي خلفه.",
+        "summary": "بيت الاتحاد على الإنترنت بالعربية والإنكليزية: أخبار وروزنامة بطولات ووثائق رسمية وأرشيف نتائج قابل للبحث يحرّره الاتحاد بنفسه دون الحاجة إلى مبرمج. وإلى جانبه متجر يشتري فيه اللاعبون صورهم الرسمية: معاينات بعلامة مائية للتصفّح، والنسخ الأصلية تُسلَّم بعد الشراء فقط. ونحن ندير الاستضافة وقاعدة البيانات والتخزين السحابي خلفه.",
         "highlight": "مباشر · متجر الصور الرسمي يعمل عليه"
       }
     }
@@ -163,12 +163,12 @@
     ],
     "locales": {
       "en": {
-        "title": "Zygnal — Telecom Infrastructure Portfolio",
+        "title": "Zygnal: Telecom Infrastructure Portfolio",
         "summary": "A scroll-driven 3D infrastructure story: a telecom tower built in front of you, from bare ground to live 5G signal. Bilingual, WebGL, delivered end to end.",
         "highlight": "Live at zygnalsy.com"
       },
       "ar": {
-        "title": "زيغنال — بوابة البنية التحتية للاتصالات",
+        "title": "زيغنال: بوابة البنية التحتية للاتصالات",
         "summary": "قصة بنية تحتية ثلاثية الأبعاد تُروى بالتمرير: برج اتصالات يُبنى أمامك من الأرض الجرداء حتى إشارة الجيل الخامس. بلغتين، وبتقنية WebGL، من الفكرة حتى التسليم.",
         "highlight": "مباشر على zygnalsy.com"
       }
@@ -226,7 +226,7 @@
         },
         {
           "k": "Made to order",
-          "v": "Quote → confirmation → production → dispatch, one pipeline"
+          "v": "Quote, confirmation, production, dispatch: one pipeline"
         },
         {
           "k": "Catalogue",
@@ -341,13 +341,13 @@
     },
     "locales": {
       "en": {
-        "title": "Yalla Gym — Online Training Platform",
-        "summary": "Our own product, in development: the environment a trainer needs to run clients online. Programmes assembled from an exercise library, sessions tracked set by set, nutrition planning, subscriptions and wallets — the whole operation in one place rather than scattered across chat apps and spreadsheets.",
+        "title": "Yalla Gym: Online Training Platform",
+        "summary": "Our own product, in development: the environment a trainer needs to run clients online. Programmes assembled from an exercise library, sessions tracked set by set, nutrition planning, subscriptions and wallets: the whole operation in one place rather than scattered across chat apps and spreadsheets.",
         "highlight": "In development"
       },
       "ar": {
-        "title": "يلا جيم — منصّة التدريب أونلاين",
-        "summary": "منتجنا الخاص، قيد التطوير: البيئة التي يحتاجها المدرّب لإدارة متدرّبيه عبر الإنترنت. برامج تُبنى من مكتبة تمارين، وحصص تُتابَع مجموعةً مجموعة، وتخطيط غذائي، واشتراكات ومحافظ — العملية كاملة في مكان واحد بدل أن تتوزّع بين تطبيقات المحادثة وجداول البيانات.",
+        "title": "يلا جيم: منصّة التدريب أونلاين",
+        "summary": "منتجنا الخاص، قيد التطوير: البيئة التي يحتاجها المدرّب لإدارة متدرّبيه عبر الإنترنت. برامج تُبنى من مكتبة تمارين، وحصص تُتابَع مجموعةً مجموعة، وتخطيط غذائي، واشتراكات ومحافظ، العملية كاملة في مكان واحد بدل أن تتوزّع بين تطبيقات المحادثة وجداول البيانات.",
         "highlight": "قيد التطوير"
       }
     }
