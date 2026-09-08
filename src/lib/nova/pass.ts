@@ -2,14 +2,16 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypt
 
 /**
  * The NOVA session pass: a stateless HMAC-SHA256 token that ties a caller to
- * a real conversation sequence. Turn 2 and turn 3 must present the pass the
- * previous turn handed out, and its `h` must match the assistant reply the
- * caller sends back, so nobody can fabricate NOVA's prior lines or replay a
- * pass out of order. Contract: docs/nova-ai.md.
+ * a real conversation sequence. Every call after the first must present the
+ * pass the previous call handed out, its `turns` must equal the number of
+ * assistant messages in the body, and its `h` must match the last assistant
+ * reply the caller sends back, so nobody can fabricate NOVA's prior lines or
+ * replay a pass out of order. Contract: docs/nova-ai.md.
  *
  * Framing: the advanced pass travels as the very last chunk of the streamed
- * reply, after NOVA_PASS_MARKER, because headers are sent before the reply
- * text (and therefore its hash) exists.
+ * reply, after NOVA_PASS_MARKER (chat calls also carry the next-step marker
+ * just before it), because headers are sent before the reply text (and
+ * therefore its hash) exists.
  */
 
 export const NOVA_PASS_VERSION = 1 as const;
@@ -17,6 +19,10 @@ export const NOVA_PASS_TTL_S = 45 * 60;
 export const NOVA_PASS_HEADER = "x-nova-pass";
 /** Appended to the stream as "\n" + marker + token. NUL never occurs in model text. */
 export const NOVA_PASS_MARKER = "\u0000pass:";
+/** Chat calls only, before the pass: "\n" + marker + ("ask" | "ready"). */
+export const NOVA_NEXT_MARKER = "\u0000next:";
+/** Model calls one pass may carry: four chat calls (turns 0 to 3), then the brief. */
+export const NOVA_PASS_MAX_TURNS = 4;
 
 export interface NovaPass {
   v: typeof NOVA_PASS_VERSION;
@@ -27,9 +33,9 @@ export interface NovaPass {
   exp: number;
   /** first 16 hex of sha256(client ip) */
   ip: string;
-  /** model calls completed under this pass: 0 at mint, 3 at most */
+  /** chat calls completed under this pass: 0 at mint, NOVA_PASS_MAX_TURNS at most */
   turns: number;
-  /** first 16 hex of sha256(last assistant reply, trimmed), or "" before turn 1 */
+  /** first 16 hex of sha256(last assistant reply, trimmed), or "" before the first reply */
   h: string;
 }
 
@@ -113,7 +119,7 @@ function isPass(x: unknown): x is NovaPass {
     typeof p.turns === "number" &&
     Number.isInteger(p.turns) &&
     p.turns >= 0 &&
-    p.turns <= 3 &&
+    p.turns <= NOVA_PASS_MAX_TURNS &&
     typeof p.h === "string" &&
     (p.h === "" || /^[0-9a-f]{16}$/.test(p.h))
   );

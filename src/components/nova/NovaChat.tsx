@@ -21,33 +21,46 @@ type Phase = "flow" | "sending" | "sent" | "error";
 
 /**
  * The live exchange inside the brief step. It opens when the brief is
- * submitted and gates the budget step until it is "done" (the visitor
- * answered or skipped) or "off" (no key, rate-limited, network failed:
- * the scripted flow continues exactly as before).
+ * submitted and gates the budget step until it is "done" (NOVA said it has
+ * enough, or the visitor skipped) or "off" (no key, rate-limited, network
+ * failed: the scripted flow continues exactly as before).
  */
-type ExchangeStatus =
-  "idle" | "streaming1" | "awaiting" | "streaming2" | "done" | "off";
+type ExchangeStatus = "idle" | "streaming" | "awaiting" | "done" | "off";
 const EXCHANGE_STATUSES: readonly ExchangeStatus[] = [
   "idle",
-  "streaming1",
+  "streaming",
   "awaiting",
-  "streaming2",
   "done",
   "off",
 ];
 type SummaryStatus = "idle" | "writing" | "done" | "off";
 interface Exchange {
   status: ExchangeStatus;
-  reply1?: string;
-  answer?: string;
-  reply2?: string;
+  /**
+   * The conversation so far: the brief as the first user message, then
+   * strictly alternating assistant/user lines. At most MAX_USER user
+   * messages, at most THREAD_CAP entries.
+   */
+  thread: NovaMessage[];
   /** The signed session pass the API hands back after every live turn. */
   pass?: string;
-  /** NOVA's own brief, written at the recap (turn 3). */
+  /** NOVA's own brief, written at the recap (the summary call). */
   summary?: string;
   summaryStatus?: SummaryStatus;
 }
-const NO_EXCHANGE: Exchange = { status: "idle" };
+const NO_EXCHANGE: Exchange = { status: "idle", thread: [] };
+/** Four chat calls per pass: the brief plus three answers. */
+const MAX_USER = 4;
+const THREAD_CAP = 8;
+
+const lastAssistant = (thread: NovaMessage[]): string | undefined => {
+  for (let i = thread.length - 1; i >= 0; i--) {
+    if (thread[i].role === "assistant") return thread[i].content;
+  }
+  return undefined;
+};
+const userCount = (thread: NovaMessage[]) =>
+  thread.filter((m) => m.role === "user").length;
 
 /**
  * The funnel, in order, one entry per question, so the order lives in data
@@ -106,32 +119,51 @@ function readText(v: unknown, cap: number): string | undefined {
 }
 
 /**
- * A restored exchange must land in a state the flow can continue from.
- * A stream never resumes ("streaming1"/"streaming2" become "off"), and a
- * status that lacks the reply it presupposes is treated as "off" too. A
- * draft written before the live turn existed has a brief but no exchange:
- * "off" keeps that visitor moving instead of trapping them at the brief.
+ * The stored thread, rebuilt entry by entry: roles validated, contents
+ * capped, and only the prefix that starts with a user line and alternates
+ * strictly survives (the API refuses anything else). Capped at THREAD_CAP.
  */
-function readExchange(v: unknown, hasBrief: boolean): Exchange {
+function readThread(v: unknown): NovaMessage[] {
+  if (!Array.isArray(v)) return [];
+  const out: NovaMessage[] = [];
+  for (const entry of v) {
+    if (out.length >= THREAD_CAP) break;
+    if (!entry || typeof entry !== "object") break;
+    const e = entry as Record<string, unknown>;
+    const role = e.role;
+    if (role !== "user" && role !== "assistant") break;
+    const expected = out.length % 2 === 0 ? "user" : "assistant";
+    if (role !== expected) break;
+    const content = readText(e.content, CAP.reply);
+    if (!content) break;
+    out.push({ role, content });
+  }
+  return out;
+}
+
+/**
+ * A restored exchange must land in a state the flow can continue from.
+ * A stream never resumes: a "streaming" whose thread already ends with a
+ * NOVA line becomes "awaiting", otherwise "off"; an "awaiting" that lacks
+ * the NOVA line it presupposes is "off" too. A draft written before the
+ * live turn existed has a brief but no exchange: "off" keeps that visitor
+ * moving instead of trapping them at the brief.
+ */
+function readExchange(v: unknown, brief: string | undefined): Exchange {
+  if (!brief) return NO_EXCHANGE;
   const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
   const raw = o.status;
   let status: ExchangeStatus =
     typeof raw === "string" && (EXCHANGE_STATUSES as string[]).includes(raw)
       ? (raw as ExchangeStatus)
-      : hasBrief
-        ? "off"
-        : "idle";
-  const reply1 = readText(o.reply1, CAP.reply);
-  const answer = readText(o.answer, CAP.reply);
-  let reply2 = readText(o.reply2, CAP.reply);
-  if (status === "streaming1") status = "off";
-  if (status === "streaming2") {
-    status = "off";
-    reply2 = undefined;
-  }
-  if (status === "idle" && hasBrief) status = "off";
-  if (!hasBrief) return NO_EXCHANGE;
-  if ((status === "awaiting" || status === "done") && !reply1) status = "off";
+      : "off";
+  let thread = readThread(o.thread);
+  // The brief is always the opening line; a thread without it is stale.
+  if (!thread.length) thread = [{ role: "user", content: brief.slice(0, CAP.reply) }];
+  const endsWithNova = thread[thread.length - 1].role === "assistant";
+  if (status === "idle") status = "off";
+  if (status === "streaming") status = endsWithNova ? "awaiting" : "off";
+  if (status === "awaiting" && !endsWithNova) status = "off";
   const pass = readText(o.pass, CAP.pass);
   const summary = readText(o.summary, CAP.summary);
   // A brief that was mid-write when the tab closed is simply not there.
@@ -143,7 +175,7 @@ function readExchange(v: unknown, hasBrief: boolean): Exchange {
         : o.summaryStatus === "idle"
           ? "idle"
           : "off";
-  return { status, reply1, answer, reply2, pass, summary, summaryStatus };
+  return { status, thread, pass, summary, summaryStatus };
 }
 
 /**
@@ -178,7 +210,7 @@ function parseDraft(raw: string): StoredDraft | null {
       typeof d.contactDraft === "string"
         ? d.contactDraft.slice(0, CAP.contact)
         : "",
-    exchange: readExchange(d.exchange, !!brief),
+    exchange: readExchange(d.exchange, brief),
     answerDraft:
       typeof d.answerDraft === "string"
         ? d.answerDraft.slice(0, CAP.reply)
@@ -308,6 +340,12 @@ export default function NovaChat() {
   const [answerDraft, setAnswerDraft] = useState("");
   /** The reply currently arriving; committed into `exchange` when it ends. */
   const [streamText, setStreamText] = useState("");
+  /**
+   * The NOVA line the live region already read out while the exchange was
+   * "awaiting". A skip closes the exchange with that same line still last,
+   * and the budget announcement must not read it a second time.
+   */
+  const [heard, setHeard] = useState("");
   const [fieldFocused, setFieldFocused] = useState(false);
   const { run: runNova, runSummary, abort: abortNova } = useNovaTurn();
   const honeypotRef = useRef<HTMLInputElement>(null);
@@ -335,10 +373,11 @@ export default function NovaChat() {
    * open the active step is the brief (already answered, so its user line
    * shows) and nothing after it is visible.
    */
-  const streaming =
-    exchange.status === "streaming1" || exchange.status === "streaming2";
+  const streaming = exchange.status === "streaming";
   const exchangeOpen =
-    !!answers.brief && exchange.status !== "done" && exchange.status !== "off";
+    !!answers.brief && (streaming || exchange.status === "awaiting");
+  const thread = exchange.thread;
+  const lastReply = lastAssistant(thread);
   const firstUnanswered = STEPS.findIndex((s) => !answers[s.id]);
   const activeIndex = exchangeOpen
     ? STEPS.findIndex((s) => s.id === "brief")
@@ -476,30 +515,26 @@ export default function NovaChat() {
   };
 
   /**
-   * Turn 3: NOVA writes the brief itself while the recap shows. Needs a live
-   * exchange and its pass; without them the recap simply has no brief. Any
-   * failure is silent, like the other turns.
+   * The summary: NOVA writes the brief itself while the recap shows. Needs a
+   * live exchange (at least one NOVA line in the thread) and its pass;
+   * without them the recap simply has no brief. Any failure is silent, like
+   * the chat calls.
    */
   const writeSummary = async (timeline: string) => {
-    const brief = answers.brief;
     const x0 = exchange;
-    if (!brief || !x0.reply1 || !x0.pass || x0.summaryStatus === "writing")
+    if (
+      !answers.brief ||
+      x0.thread.length < 2 ||
+      !lastAssistant(x0.thread) ||
+      !x0.pass ||
+      x0.summaryStatus === "writing"
+    )
       return;
     if (x0.summary) return;
     setExchange((x) => ({ ...x, summaryStatus: "writing" }));
-    const messages: NovaMessage[] = [
-      { role: "user", content: brief.slice(0, CAP.reply) },
-      { role: "assistant", content: x0.reply1.slice(0, CAP.reply) },
-    ];
-    if (x0.answer && x0.reply2) {
-      messages.push(
-        { role: "user", content: x0.answer.slice(0, CAP.reply) },
-        { role: "assistant", content: x0.reply2.slice(0, CAP.reply) },
-      );
-    }
     const r = await runSummary({
       locale,
-      messages,
+      messages: x0.thread,
       context: {
         type: answers.type?.label ?? "",
         budget: answers.budget?.label ?? "",
@@ -532,72 +567,88 @@ export default function NovaChat() {
   };
 
   /**
-   * One live turn. Turn 1 ends in "awaiting" (the visitor may answer or
-   * skip); turn 2 ends in "done". Any failure is silent: turn 1 falls to
-   * "off" and the budget chips appear as they always did, turn 2 keeps the
-   * visitor's answer and simply has no second reply. An aborted run (reset,
-   * unmount) touches nothing.
+   * One chat call over the whole thread (which ends with the visitor's
+   * newest line). NOVA's reply lands in the thread; the server says whether
+   * NOVA still has a question ("awaiting") or has enough ("done"). Any
+   * failure is silent: the exchange falls to `onFail` and the budget chips
+   * appear as they always did. An aborted run (reset, unmount) touches
+   * nothing.
    */
-  const runTurn = async (turn: 1 | 2, messages: NovaMessage[]) => {
+  const runChat = async (
+    messages: NovaMessage[],
+    pass: string | undefined,
+    onFail: "off" | "done",
+  ) => {
     setStreamText("");
-    setExchange((x) => ({
-      ...x,
-      status: turn === 1 ? "streaming1" : "streaming2",
-    }));
+    setExchange((x) => ({ ...x, thread: messages, status: "streaming" }));
     const r = await runNova(
-      { locale, turn, messages, pass: exchange.pass },
+      { locale, kind: "chat", messages, pass },
       setStreamText,
     );
     if (!r.ok && r.aborted) return;
     focusNextRef.current = true;
     setStreamText("");
-    setExchange((x) => {
-      const pass = r.ok && r.pass ? r.pass : x.pass;
-      if (turn === 1) {
-        return r.ok
-          ? { ...x, reply1: r.text, status: "awaiting", pass }
-          : { ...x, status: "off" };
-      }
-      return r.ok
-        ? { ...x, reply2: r.text, status: "done", pass }
-        : { ...x, status: "done" };
-    });
+    setExchange((x) =>
+      r.ok
+        ? {
+            ...x,
+            thread: [
+              ...messages,
+              { role: "assistant", content: r.text.slice(0, CAP.reply) },
+            ],
+            status: r.next === "ready" ? "done" : "awaiting",
+            pass: r.pass ?? x.pass,
+          }
+        : { ...x, status: onFail },
+    );
   };
 
   const submitBrief = () => {
     const v = briefDraft.trim();
     if (v.length < MIN_TEXT.brief) return;
     focusNextRef.current = true;
+    setHeard("");
     setAnswers((a) => ({ ...a, brief: v }));
-    void runTurn(1, [{ role: "user", content: v.slice(0, CAP.reply) }]);
+    void runChat(
+      [{ role: "user", content: v.slice(0, CAP.reply) }],
+      exchange.pass,
+      "off",
+    );
   };
 
   const skipAnswer = () => {
     focusNextRef.current = true;
     setAnswerDraft("");
+    setHeard(lastReply ?? "");
     setExchange((x) => ({ ...x, status: "done" }));
   };
 
   const submitAnswer = () => {
     const v = answerDraft.trim();
-    if (!v || !answers.brief || !exchange.reply1) return;
+    if (!v || !answers.brief || exchange.status !== "awaiting" || !lastReply)
+      return;
     focusNextRef.current = true;
     setAnswerDraft("");
-    setExchange((x) => ({ ...x, answer: v }));
-    void runTurn(2, [
-      { role: "user", content: answers.brief.slice(0, CAP.reply) },
-      { role: "assistant", content: exchange.reply1.slice(0, CAP.reply) },
-      { role: "user", content: v.slice(0, CAP.reply) },
-    ]);
+    // The pass covers four chat calls; a fifth would only be refused.
+    if (userCount(thread) >= MAX_USER) {
+      setHeard(lastReply);
+      setExchange((x) => ({ ...x, status: "done" }));
+      return;
+    }
+    void runChat(
+      [...thread, { role: "user", content: v.slice(0, CAP.reply) }],
+      exchange.pass,
+      "done",
+    );
   };
 
   /** The live exchange as plain text, for the founder's copy of the brief. */
   const conversation = (): string | undefined => {
-    if (!exchange.reply1) return undefined;
-    const lines = [`NOVA: ${exchange.reply1}`];
-    if (exchange.answer) lines.push(`Visitor: ${exchange.answer}`);
-    if (exchange.reply2) lines.push(`NOVA: ${exchange.reply2}`);
-    return lines.join("\n");
+    if (thread.length < 2) return undefined;
+    return thread
+      .slice(1)
+      .map((m) => `${m.role === "assistant" ? "NOVA" : "Visitor"}: ${m.content}`)
+      .join("\n");
   };
 
   const reset = () => {
@@ -609,6 +660,7 @@ export default function NovaChat() {
     setExchange(NO_EXCHANGE);
     setAnswerDraft("");
     setStreamText("");
+    setHeard("");
     setDelivered(false);
     setPhase("flow");
     clearDraft();
@@ -679,15 +731,22 @@ export default function NovaChat() {
           : streaming
             ? n.ai.thinking
             : exchange.status === "awaiting"
-              ? (exchange.reply1 ?? "")
+              ? (lastReply ?? "")
               : step === "recap"
                 ? `${n.recap.title} ${n.recap.confirm}`
-                : step === "budget" && exchange.reply2
-                  ? `${exchange.reply2} ${n.steps.budget.q}`
+                : step === "budget" && lastReply && lastReply !== heard
+                  ? `${lastReply} ${n.steps.budget.q}`
                   : n.steps[step].q;
 
   /** The exchange has something to show once a reply exists or is arriving. */
-  const showExchange = exchange.status === "streaming1" || !!exchange.reply1;
+  const showExchange = streaming || thread.length > 1;
+  /** The id of NOVA's last line, the label of the answer field. */
+  const lastReplyId = (() => {
+    for (let i = thread.length - 1; i >= 0; i--) {
+      if (thread[i].role === "assistant") return `nova-q-ai-${i}`;
+    }
+    return undefined;
+  })();
 
   return (
     <div className="text-start">
@@ -790,24 +849,24 @@ export default function NovaChat() {
                 </form>
               )}
 
-              {/* the live turn: NOVA reads the brief and asks one question */}
+              {/* the live exchange: NOVA reads the brief and asks back */}
               {s.id === "brief" && showExchange && (
                 <>
-                  {exchange.status === "streaming1" ? (
+                  {thread.slice(1).map((m, j) =>
+                    m.role === "assistant" ? (
+                      <NovaBubble key={j + 1} id={`nova-q-ai-${j + 1}`}>
+                        <p className="whitespace-pre-wrap">{m.content}</p>
+                      </NovaBubble>
+                    ) : (
+                      <UserBubble key={j + 1}>{m.content}</UserBubble>
+                    ),
+                  )}
+                  {streaming && (
                     <StreamingLine
                       text={streamText}
                       thinking={n.ai.thinking}
                       groupRef={setActive}
                     />
-                  ) : (
-                    exchange.reply1 && (
-                      <NovaBubble id="nova-q-ai">
-                        <p className="whitespace-pre-wrap">{exchange.reply1}</p>
-                      </NovaBubble>
-                    )
-                  )}
-                  {exchange.answer && (
-                    <UserBubble>{exchange.answer}</UserBubble>
                   )}
                   {exchange.status === "awaiting" && (
                     <form
@@ -824,7 +883,7 @@ export default function NovaChat() {
                         <input
                           value={answerDraft}
                           onChange={(e) => setAnswerDraft(e.target.value)}
-                          aria-labelledby="nova-q-ai"
+                          aria-labelledby={lastReplyId}
                           placeholder={n.ai.answerPlaceholder}
                           maxLength={CAP.reply}
                           className="w-full bg-transparent py-2 text-[1.0625rem] text-ink outline-none placeholder:text-muted/60"
@@ -847,19 +906,6 @@ export default function NovaChat() {
                         </button>
                       </div>
                     </form>
-                  )}
-                  {exchange.status === "streaming2" ? (
-                    <StreamingLine
-                      text={streamText}
-                      thinking={n.ai.thinking}
-                      groupRef={setActive}
-                    />
-                  ) : (
-                    exchange.reply2 && (
-                      <NovaBubble>
-                        <p className="whitespace-pre-wrap">{exchange.reply2}</p>
-                      </NovaBubble>
-                    )
                   )}
                 </>
               )}

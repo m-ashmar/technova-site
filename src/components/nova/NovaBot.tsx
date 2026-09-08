@@ -254,6 +254,16 @@ export default function NovaBot({
       later(land, ARRIVE_MS + 300);
     };
 
+    if (process.env.NODE_ENV === "development") {
+      // verification aid, same gate as the canvas DevBridge: lets a headless
+      // check launch and land the flyer without a real intersection
+      (window as unknown as Record<string, unknown>).__novaBot = {
+        launch,
+        land,
+        gesture: playGesture,
+      };
+    }
+
     if (typeof IntersectionObserver === "undefined") {
       launch();
       return () => flyer.removeEventListener("animationend", onEnd);
@@ -397,9 +407,9 @@ export default function NovaBot({
   const shown = mood === "idle" ? caption : "";
 
   return (
-    <div ref={stageRef} className={styles.stage} aria-hidden>
+    <div ref={stageRef} className={`${styles.stage} ${styles[mood]}`} aria-hidden>
       <div className={styles.track}>
-        <div ref={flyerRef} className={`${styles.flyer} ${styles[mood]}`}>
+        <div ref={flyerRef} className={styles.flyer}>
           <div className={styles.drift}>
             <div className={styles.bob}>
               <div ref={gestRef} className={styles.gest}>
