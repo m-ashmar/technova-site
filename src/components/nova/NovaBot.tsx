@@ -13,7 +13,8 @@ import styles from "./NovaBot.module.css";
 
 export type BotMood = "idle" | "listening" | "thinking" | "happy";
 
-type Gesture = "wave" | "look" | "tilt" | "blink2" | "spin" | "hop" | "roll";
+type Gesture =
+  "wave" | "look" | "tilt" | "blink2" | "spin" | "hop" | "roll" | "patrol";
 
 interface NovaBotProps {
   mood?: BotMood;
@@ -31,6 +32,7 @@ const GESTURES: readonly Gesture[] = [
   "spin",
   "hop",
   "roll",
+  "patrol",
 ];
 
 /** Gesture lengths, mirrored in NovaBot.module.css; used as the fallback. */
@@ -42,6 +44,7 @@ const GESTURE_MS: Record<Gesture, number> = {
   spin: 1000,
   hop: 900,
   roll: 1100,
+  patrol: 7000,
 };
 
 const GESTURE_CLASS: Record<Gesture, string> = {
@@ -52,9 +55,10 @@ const GESTURE_CLASS: Record<Gesture, string> = {
   spin: styles["g-spin"],
   hop: styles["g-hop"],
   roll: styles["g-roll"],
+  patrol: styles["g-patrol"],
 };
 
-const ARRIVE_MS = 1600;
+const ARRIVE_MS = 2800;
 const TYPE_MS = 45;
 const HOLD_MS = 3500;
 const GAP_MIN_MS = 8000;
@@ -118,6 +122,7 @@ export default function NovaBot({
   const lineIxRef = useRef(1);
   const lastGestureRef = useRef<Gesture | null>(null);
   const rollCooldownRef = useRef(0);
+  const patrolCooldownRef = useRef(1);
   const gestureCountRef = useRef(0);
 
   useEffect(() => {
@@ -163,8 +168,19 @@ export default function NovaBot({
               ? lidsRef.current
               : name === "spin"
                 ? starRef.current
-                : gestRef.current;
+                : name === "patrol"
+                  ? flyer
+                  : gestRef.current;
       if (!el) return;
+      if (name === "patrol") {
+        // A short flight along the rule: somewhere between the perch and the
+        // far end of the stage, a little higher than the hover.
+        const w = stageRef.current?.clientWidth ?? 420;
+        const x = 110 + Math.random() * Math.max(40, w - 260);
+        const y = -(6 + Math.random() * 14);
+        flyer.style.setProperty("--patrol-x", `${Math.round(x)}px`);
+        flyer.style.setProperty("--patrol-y", `${Math.round(y)}px`);
+      }
       const run: GestureRun = { name, el, timer: 0, onEnd: () => {} };
       run.onEnd = (e: Event) => {
         if (e.target === el && gestureRef.current === run) clearGesture();
@@ -362,17 +378,22 @@ export default function NovaBot({
       const pool = GESTURES.filter(
         (g) =>
           g !== lastGestureRef.current &&
-          (g !== "roll" || rollCooldownRef.current === 0),
+          (g !== "roll" || rollCooldownRef.current === 0) &&
+          (g !== "patrol" || patrolCooldownRef.current === 0),
       );
       if (touch && lastGestureRef.current !== "look") pool.push("look");
       const g = pool[Math.floor(Math.random() * pool.length)] ?? "blink2";
       lastGestureRef.current = g;
       rollCooldownRef.current =
         g === "roll" ? 3 : Math.max(0, rollCooldownRef.current - 1);
+      // a flight roughly every third gesture, never twice in a row
+      patrolCooldownRef.current =
+        g === "patrol" ? 2 : Math.max(0, patrolCooldownRef.current - 1);
       playGesture(g);
 
       gestureCountRef.current += 1;
-      if (gestureCountRef.current % 2 === 0) {
+      // no caption while flying: the caption sits at the perch
+      if (g !== "patrol" && gestureCountRef.current % 2 === 0) {
         const all = linesRef.current;
         if (all.length > 0) {
           let ix = lineIxRef.current;
@@ -407,7 +428,11 @@ export default function NovaBot({
   const shown = mood === "idle" ? caption : "";
 
   return (
-    <div ref={stageRef} className={`${styles.stage} ${styles[mood]}`} aria-hidden>
+    <div
+      ref={stageRef}
+      className={`${styles.stage} ${styles[mood]}`}
+      aria-hidden
+    >
       <div className={styles.track}>
         <div ref={flyerRef} className={styles.flyer}>
           <div className={styles.drift}>
