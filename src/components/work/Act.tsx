@@ -36,6 +36,7 @@ const COLS: Record<ProjectLayoutKind, { text: string; media: string }> = {
 /** `sizes` for images by the column they occupy (of a 1440px wrap). */
 const SIZES = {
   wide: "(min-width: 48rem) min(54vw, 780px), 100vw",
+  half: "(min-width: 48rem) min(27vw, 380px), (min-width: 40rem) 50vw, 100vw",
   phone: "(min-width: 48rem) min(15vw, 210px), 30vw",
 };
 
@@ -145,17 +146,33 @@ export default function Act({
     );
   } else if (images.length) {
     // media-end / media-start: the frames stack; no images, no column.
+    // The first shot leads at full width; any further shots pair up under
+    // it so a three-image act stays near one viewport tall.
+    const [lead, ...rest] = images;
     media = (
       <div className="grid gap-6">
-        {images.map((img) => (
-          <FramedImage
-            key={img.src}
-            src={img.src}
-            alt={img.alt[locale]}
-            frame={img.frame}
-            sizes={SIZES.wide}
-          />
-        ))}
+        <FramedImage
+          key={lead.src}
+          src={lead.src}
+          alt={lead.alt[locale]}
+          frame={lead.frame}
+          sizes={SIZES.wide}
+        />
+        {rest.length ? (
+          <div
+            className={`grid gap-6 ${rest.length > 1 ? "sm:grid-cols-2" : ""}`}
+          >
+            {rest.map((img) => (
+              <FramedImage
+                key={img.src}
+                src={img.src}
+                alt={img.alt[locale]}
+                frame={img.frame}
+                sizes={rest.length > 1 ? SIZES.half : SIZES.wide}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
     );
   }

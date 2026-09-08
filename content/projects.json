@@ -10,7 +10,25 @@
     ],
     "link": "https://www.syrianbodybuilding.org",
     "media": {
-      "layout": "media-end"
+      "layout": "media-end",
+      "images": [
+        {
+          "src": "/work/sbbf-judging/judge-scoring.webp",
+          "frame": "tablet",
+          "alt": {
+            "en": "The judge's tablet mid-round: four athletes still to rank by bib number, two already placed, one judge of one submitted.",
+            "ar": "جهاز الحكَم في منتصف الجولة: أربعة لاعبين بانتظار الترتيب بأرقامهم، واثنان رُتّبا، وحكَم واحد من أصل واحد سلّم تقييمه."
+          }
+        },
+        {
+          "src": "/work/sbbf-judging/results-page.webp",
+          "frame": "none",
+          "alt": {
+            "en": "The first page of the published results document: the federation's header, the SHA-256 document hash, and the finalized placings for one category with dropped scores struck through.",
+            "ar": "الصفحة الأولى من وثيقة النتائج المنشورة: ترويسة الاتحاد، وبصمة الوثيقة SHA-256، والمراكز النهائية لفئة واحدة مع شطب الدرجات المستبعدة."
+          }
+        }
+      ]
     },
     "ledger": [
       {
@@ -68,7 +86,33 @@
     ],
     "link": "https://www.syrianbodybuilding.org",
     "media": {
-      "layout": "media-start"
+      "layout": "media-start",
+      "images": [
+        {
+          "src": "/work/sbbf-web-media/home.webp",
+          "frame": "browser",
+          "alt": {
+            "en": "The federation's Arabic homepage: the golden eagle over the championship stage, with the official federation badge and the main navigation.",
+            "ar": "الصفحة الرئيسية للاتحاد بالعربية: النسر الذهبي فوق منصّة البطولة، مع شارة الاتحاد الرسمية والتنقّل الرئيسي."
+          }
+        },
+        {
+          "src": "/work/sbbf-web-media/archive.webp",
+          "frame": "browser",
+          "alt": {
+            "en": "The results archive: a search by athlete name over every published championship, with the latest event's categories listed below.",
+            "ar": "أرشيف النتائج: بحث باسم اللاعب في كل البطولات المنشورة، مع فئات آخر بطولة مدرجة تحته."
+          }
+        },
+        {
+          "src": "/work/sbbf-web-media/admin-collections.webp",
+          "frame": "browser",
+          "alt": {
+            "en": "The media admin the federation runs itself: 86 athlete photo collections with status, photo counts and publish controls, athlete names blurred.",
+            "ar": "لوحة إدارة الوسائط التي يديرها الاتحاد بنفسه: ٨٦ مجموعة صور للاعبين مع الحالة وعدد الصور وأزرار النشر، وأسماء اللاعبين مموّهة."
+          }
+        }
+      ]
     },
     "ledger": [
       {
