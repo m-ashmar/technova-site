@@ -7,7 +7,7 @@ Inside the brief step of the intake chat, NOVA answers the visitor's idea with a
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `ANTHROPIC_API_KEY` | unset | Enables the live turn. Unset means `/api/nova` answers 503 and the chat stays scripted. |
-| `NOVA_MODEL` | `claude-sonnet-5` | Model for the live turn. The call sends `thinking: disabled`, so pick a model that accepts it (Sonnet 5, Opus 5, Haiku 4.5). |
+| `NOVA_MODEL` | `claude-haiku-4-5-20251001` | Model for the live turn. The call sends `thinking: disabled`, so pick a model that accepts it (Sonnet 5, Opus 5, Haiku 4.5). |
 
 Copy `.env.example` to `.env.local` to configure a local dev server. Never commit `.env.local`.
 

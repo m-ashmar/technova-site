@@ -4,10 +4,10 @@
  */
 
 /** Model for the live turn; overridable per deployment with NOVA_MODEL. */
-export const NOVA_DEFAULT_MODEL = "claude-sonnet-5";
+export const NOVA_DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 
-/** Hard cap on reply length. The prompt asks for about 70 words. */
-export const NOVA_MAX_TOKENS = 220;
+/** Hard cap on reply length. Arabic spends more tokens per word than English, so the cap sits above the ~60-word ask. */
+export const NOVA_MAX_TOKENS = 320;
 
 /** Requests per IP per window. Two live turns per brief leaves ample room. */
 export const NOVA_RATE_LIMIT = 20;

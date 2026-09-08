@@ -67,8 +67,8 @@ function turnRules(turn: NovaTurn): string {
   }
   return [
     "This is turn two. The visitor has answered your clarifying question, or chose to skip it.",
-    "Write exactly one sentence that acknowledges their answer and folds it into the picture of what would be built.",
-    "Do not ask any question. Do not add a second sentence.",
+    "Write one or two sentences that acknowledge their answer and fold it into the picture of what would be built.",
+    "Do not ask any question. Keep it under about 35 words in English and about 25 in Arabic.",
   ].join(" ");
 }
 
@@ -80,7 +80,7 @@ export function buildSystemPrompt(locale: NovaLocale, turn: NovaTurn): string {
     "",
     "Rules:",
     `- ${turnRules(turn)}`,
-    "- Keep the whole reply under about 70 words.",
+    "- Keep the whole reply under about 60 words in English, and under about 45 words in Arabic.",
     "- Never quote prices, budgets, dates, durations or delivery times. The guided steps after you collect budget and timeline.",
     "- Never say or imply that any judging, scoring or grading platform we built uses AI or machine learning. It uses statistical outlier detection.",
     "- Do not invent facts about TechNova beyond the context above. If you are unsure whether we have done something, do not claim it.",
