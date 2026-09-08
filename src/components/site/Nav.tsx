@@ -99,7 +99,7 @@ export default function Nav() {
               <a
                 href={`#${l.id}`}
                 aria-current={active === l.id ? "true" : undefined}
-                className={`relative py-1 text-sm transition ${
+                className={`t-small relative py-1 transition ${
                   active === l.id ? "text-ink" : "text-muted hover:text-ink"
                 }`}
               >

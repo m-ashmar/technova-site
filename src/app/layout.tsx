@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import {
   Orbitron,
-  Inter,
+  Instrument_Sans,
+  Bricolage_Grotesque,
   JetBrains_Mono,
   IBM_Plex_Sans_Arabic,
+  Noto_Kufi_Arabic,
 } from "next/font/google";
 import { loadContent } from "@/lib/content/loader";
 import "./globals.css";
@@ -15,9 +17,19 @@ const display = Orbitron({
   display: "swap",
 });
 
-const sans = Inter({
-  variable: "--font-inter",
+// Latin body. Variable font: omitting `weight` loads the whole wght range.
+const sans = Instrument_Sans({
+  variable: "--font-sans-latin",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Latin display for every tier below the hero. Variable, with the optical
+// size and width axes so `font-optical-sizing: auto` has something to drive.
+const displayLatin = Bricolage_Grotesque({
+  variable: "--font-display-latin",
+  subsets: ["latin"],
+  axes: ["opsz", "wdth"],
   display: "swap",
 });
 
@@ -33,6 +45,15 @@ const mono = JetBrains_Mono({
 // it now loads on demand; 300/600 are unused anywhere in the styles.
 const arabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ar",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  preload: false,
+});
+
+// Arabic display tiers. Same reasoning as above: only AR visitors paint it.
+const arabicDisplay = Noto_Kufi_Arabic({
+  variable: "--font-ar-display",
   subsets: ["arabic"],
   weight: ["400", "500", "700"],
   display: "swap",
@@ -87,7 +108,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${display.variable} ${sans.variable} ${mono.variable} ${arabic.variable} h-full antialiased`}
+      className={`${display.variable} ${displayLatin.variable} ${sans.variable} ${mono.variable} ${arabic.variable} ${arabicDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         {/* plain blocking inline script: runs during parse, before paint */}

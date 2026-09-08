@@ -3,18 +3,57 @@
     "slug": "sbbf-judging",
     "order": 1,
     "status": "live",
-    "tags": ["Platform", "Real-time", "Live events"],
+    "tags": [
+      "Platform",
+      "Real-time",
+      "Live events"
+    ],
     "link": "https://www.syrianbodybuilding.org",
+    "media": {
+      "layout": "media-end"
+    },
+    "ledger": [
+      {
+        "k": {
+          "en": "Role",
+          "ar": "الدور"
+        },
+        "v": {
+          "en": "Design, build, match-day operations",
+          "ar": "تصميم وبناء وتشغيل يوم البطولة"
+        }
+      },
+      {
+        "k": {
+          "en": "System",
+          "ar": "النظام"
+        },
+        "v": {
+          "en": "Judge tablets, one scoring server, live standings",
+          "ar": "أجهزة الحكّام، خادم تحكيم واحد، ترتيب لحظي"
+        }
+      },
+      {
+        "k": {
+          "en": "Scope",
+          "ar": "النطاق"
+        },
+        "v": {
+          "en": "Scoring, results, official records",
+          "ar": "التحكيم والنتائج والسجلات الرسمية"
+        }
+      }
+    ],
     "locales": {
       "en": {
         "title": "Live Judging Platform — Syrian Bodybuilding & Fitness Federation",
-        "summary": "The federation's official competitions run on it. Judges score from their own tablets, standings recompute live under IFBB placement rules, and judges see only bib numbers — athlete identities are stripped on the server, not hidden in the interface. Scoring that drifts from the panel is flagged as it happens, and published results are frozen and fingerprinted so no one can quietly change a placing after the fact.",
-        "highlight": "Live · every federation championship this season"
+        "summary": "The federation's official competitions run on it. Judges score from their own tablets, standings recompute live under IFBB placement rules, and judges see only bib numbers — athlete identities are stripped on the server, not hidden in the interface. Scores that drift from the panel are flagged as they happen, and published results are frozen and fingerprinted so no one can quietly change a placing after the fact.",
+        "highlight": "Live · every federation championship"
       },
       "ar": {
         "title": "منصّة التحكيم المباشر — الاتحاد السوري لبناء الأجسام واللياقة",
         "summary": "بطولات الاتحاد الرسمية تُدار عليها. كل حكَم يقيّم من جهازه، والترتيب يُحتسب لحظيًا وفق قواعد الترتيب المعتمدة، ولا يرى الحكَم سوى رقم اللاعب — فالهويات تُحجب في الخادم لا في الواجهة. أي تقييم يشذّ عن اللجنة يُرصد فور حدوثه، والنتائج المعتمدة تُجمَّد وتُبصَم رقميًا فلا يمكن تعديل مركزٍ بعد إعلانه.",
-        "highlight": "مباشر · في كل بطولات الاتحاد هذا الموسم"
+        "highlight": "مباشر · في كل بطولات الاتحاد"
       }
     }
   },
@@ -22,19 +61,57 @@
     "slug": "sbbf-web-media",
     "order": 2,
     "status": "live",
-    "tags": ["Web", "Commerce", "Bilingual"],
+    "tags": [
+      "Web",
+      "Commerce",
+      "Bilingual"
+    ],
     "link": "https://www.syrianbodybuilding.org",
-    "media": { "embed": "https://www.syrianbodybuilding.org" },
+    "media": {
+      "layout": "media-start"
+    },
+    "ledger": [
+      {
+        "k": {
+          "en": "Role",
+          "ar": "الدور"
+        },
+        "v": {
+          "en": "Design, build, hosting and storage",
+          "ar": "تصميم وبناء واستضافة وتخزين"
+        }
+      },
+      {
+        "k": {
+          "en": "System",
+          "ar": "النظام"
+        },
+        "v": {
+          "en": "Bilingual site the federation edits itself, photo store on top",
+          "ar": "موقع بلغتين يحرّره الاتحاد بنفسه، ومتجر صور فوقه"
+        }
+      },
+      {
+        "k": {
+          "en": "Scope",
+          "ar": "النطاق"
+        },
+        "v": {
+          "en": "Website, results archive, athlete photo store",
+          "ar": "الموقع وأرشيف النتائج ومتجر صور اللاعبين"
+        }
+      }
+    ],
     "locales": {
       "en": {
         "title": "Federation Website & Athlete Media Store",
         "summary": "The federation's home online in Arabic and English — news, championship calendar, official documents and a searchable archive of results the federation edits itself, with no developer in the loop. Built onto it is a store where athletes buy the official photographs taken of them: watermarked previews to browse, clean originals released only after purchase. We run the hosting, database and cloud storage behind it.",
-        "highlight": "Live · 48 athlete galleries, 376 photographs"
+        "highlight": "Live · the official photo store runs on it"
       },
       "ar": {
         "title": "موقع الاتحاد ومتجر صور اللاعبين",
         "summary": "بيت الاتحاد على الإنترنت بالعربية والإنكليزية — أخبار وروزنامة بطولات ووثائق رسمية وأرشيف نتائج قابل للبحث يحرّره الاتحاد بنفسه دون الحاجة إلى مبرمج. وإلى جانبه متجر يشتري فيه اللاعبون صورهم الرسمية: معاينات بعلامة مائية للتصفّح، والنسخ الأصلية تُسلَّم بعد الشراء فقط. ونحن ندير الاستضافة وقاعدة البيانات والتخزين السحابي خلفه.",
-        "highlight": "مباشر · ٤٨ معرضًا و٣٧٦ صورة"
+        "highlight": "مباشر · متجر الصور الرسمي يعمل عليه"
       }
     }
   },
@@ -42,9 +119,48 @@
     "slug": "zygnal",
     "order": 3,
     "status": "live",
-    "tags": ["Web", "3D", "Bilingual"],
+    "tags": [
+      "Web",
+      "3D",
+      "Bilingual"
+    ],
     "link": "https://zygnalsy.com",
-    "media": { "embed": "https://zygnalsy.com" },
+    "media": {
+      "embed": "https://zygnalsy.com",
+      "layout": "theatre"
+    },
+    "ledger": [
+      {
+        "k": {
+          "en": "Role",
+          "ar": "الدور"
+        },
+        "v": {
+          "en": "Concept, 3D, build, delivery",
+          "ar": "الفكرة والنمذجة ثلاثية الأبعاد والبناء والتسليم"
+        }
+      },
+      {
+        "k": {
+          "en": "System",
+          "ar": "النظام"
+        },
+        "v": {
+          "en": "WebGL tower driven by scroll, one content source for both languages",
+          "ar": "برج WebGL يقوده التمرير، ومصدر محتوى واحد للغتين"
+        }
+      },
+      {
+        "k": {
+          "en": "Scope",
+          "ar": "النطاق"
+        },
+        "v": {
+          "en": "Portfolio site on the client's own domain",
+          "ar": "موقع تعريفي على نطاق العميل"
+        }
+      }
+    ],
     "locales": {
       "en": {
         "title": "Zygnal — Telecom Infrastructure Portfolio",
@@ -62,7 +178,92 @@
     "slug": "boutique-commerce",
     "order": 4,
     "status": "soon",
-    "tags": ["E-commerce", "CMS", "Bilingual"],
+    "tags": [
+      "E-commerce",
+      "CMS",
+      "Bilingual"
+    ],
+    "media": {
+      "layout": "spec"
+    },
+    "ledger": [
+      {
+        "k": {
+          "en": "Role",
+          "ar": "الدور"
+        },
+        "v": {
+          "en": "Design, build, production hardening",
+          "ar": "تصميم وبناء وتجهيز للإنتاج"
+        }
+      },
+      {
+        "k": {
+          "en": "System",
+          "ar": "النظام"
+        },
+        "v": {
+          "en": "Two payment rails, one quote-to-production pipeline",
+          "ar": "مساران للدفع ومسار واحد من التسعير إلى التنفيذ"
+        }
+      },
+      {
+        "k": {
+          "en": "Scope",
+          "ar": "النطاق"
+        },
+        "v": {
+          "en": "Storefront, orders, owner-edited catalogue",
+          "ar": "المتجر والطلبات وكتالوج تحرّره المالكة"
+        }
+      }
+    ],
+    "spec": {
+      "en": [
+        {
+          "k": "Payment rails",
+          "v": "International card + local mobile wallet, reconciled by reference code"
+        },
+        {
+          "k": "Made to order",
+          "v": "Quote → confirmation → production → dispatch, one pipeline"
+        },
+        {
+          "k": "Catalogue",
+          "v": "Two product lines; products, prices and policies edited by the owner"
+        },
+        {
+          "k": "Languages",
+          "v": "Arabic and English, one content source"
+        },
+        {
+          "k": "State",
+          "v": "Delivered and hardened; launches when the client is ready"
+        }
+      ],
+      "ar": [
+        {
+          "k": "قنوات الدفع",
+          "v": "بطاقة دولية + محفظة محلية على الهاتف، تُطابَقان برمز مرجعي"
+        },
+        {
+          "k": "حسب الطلب",
+          "v": "تسعير ← تأكيد ← تنفيذ ← إرسال، في مسار واحد"
+        },
+        {
+          "k": "الكتالوج",
+          "v": "خطّا منتجات؛ المنتجات والأسعار والسياسات تحرّرها صاحبة المتجر"
+        },
+        {
+          "k": "اللغات",
+          "v": "العربية والإنكليزية، من مصدر محتوى واحد"
+        },
+        {
+          "k": "الحالة",
+          "v": "مُسلَّم ومُجهَّز؛ يُطلَق حين تكون العميلة جاهزة"
+        }
+      ]
+    },
     "locales": {
       "en": {
         "title": "Boutique Commerce Platform",
@@ -80,7 +281,64 @@
     "slug": "yalla-gym",
     "order": 5,
     "status": "building",
-    "tags": ["App", "Product", "Our own"],
+    "tags": [
+      "App",
+      "Product",
+      "Our own"
+    ],
+    "media": {
+      "layout": "phones"
+    },
+    "ledger": [
+      {
+        "k": {
+          "en": "Role",
+          "ar": "الدور"
+        },
+        "v": {
+          "en": "Our own product",
+          "ar": "منتجنا الخاص"
+        }
+      },
+      {
+        "k": {
+          "en": "System",
+          "ar": "النظام"
+        },
+        "v": {
+          "en": "Trainer app, client app, admin",
+          "ar": "تطبيق المدرّب وتطبيق المتدرّب ولوحة الإدارة"
+        }
+      },
+      {
+        "k": {
+          "en": "Scope",
+          "ar": "النطاق"
+        },
+        "v": {
+          "en": "Programmes, sessions, nutrition, subscriptions",
+          "ar": "البرامج والحصص والتغذية والاشتراكات"
+        }
+      }
+    ],
+    "features": {
+      "en": [
+        "Programmes assembled from an exercise library",
+        "Sessions logged set by set",
+        "Nutrition plans per client",
+        "Subscriptions and wallets built in",
+        "One dashboard across every client",
+        "Arabic and English"
+      ],
+      "ar": [
+        "برامج تُبنى من مكتبة تمارين",
+        "حصص تُسجَّل مجموعةً مجموعة",
+        "خطط غذائية لكل متدرّب",
+        "اشتراكات ومحافظ مدمجة",
+        "لوحة واحدة لكل المتدرّبين",
+        "بالعربية والإنكليزية"
+      ]
+    },
     "locales": {
       "en": {
         "title": "Yalla Gym — Online Training Platform",

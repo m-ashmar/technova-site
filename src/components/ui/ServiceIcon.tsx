@@ -7,7 +7,11 @@ import { STAR_GLYPH_PATH } from "@/lib/star";
  * `pathLength="1"` and `data-draw` so the CSS can draw it on reveal.
  */
 
-type Props = { icon: "ai" | "apps" | "web" | "auto" };
+type Props = {
+  icon: "ai" | "apps" | "web" | "auto";
+  /** Rendered box in px. The glyph is drawn on a 48-unit grid; 44 is the legacy card size. */
+  size?: number;
+};
 
 const stroke = {
   fill: "none",
@@ -143,11 +147,13 @@ function Auto() {
   );
 }
 
-export default function ServiceIcon({ icon }: Props) {
+export default function ServiceIcon({ icon, size = 44 }: Props) {
   return (
     <svg
       viewBox="0 0 48 48"
-      className="icon-draw h-11 w-11 text-ink/85 transition-colors duration-300 group-hover:text-ink"
+      width={size}
+      height={size}
+      className="icon-draw shrink-0 text-ink/85 transition-colors duration-300 group-hover:text-ink"
       aria-hidden
     >
       {icon === "ai" && <Ai />}

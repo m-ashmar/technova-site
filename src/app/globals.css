@@ -12,8 +12,13 @@
      itself must not move: it is the wordmark and the particle tone. */
   --color-cta: #0b6fd8;
   --color-line: rgb(255 255 255 / 8%);
-  --font-display: var(--font-orbitron);
-  --font-sans: var(--font-inter);
+  /* Secondary running text. Body paragraphs use this; `muted` is for labels
+     and metadata only. */
+  --color-ink-soft: #c3c9d6;
+  /* Rules that carry meaning: section openers, the terminal header. */
+  --color-line-strong: rgb(255 255 255 / 16%);
+  --font-display: var(--font-display-latin);
+  --font-sans: var(--font-sans-latin);
   --font-mono: var(--font-jbmono);
 }
 
@@ -26,19 +31,29 @@ html {
 body {
   @apply bg-bg text-ink font-sans;
   text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+}
+
+/* The logo face. `--font-display` now points at Bricolage for every tier
+   below the hero; the hero lockup (TE ★ CH / NOVA) and the nav wordmark keep
+   Orbitron through this class, in every locale. */
+.brand-mark {
+  font-family: var(--font-orbitron);
 }
 
 /* Arabic: swap body + display faces, kill Latin letter-spacing */
 html.lang-ar body {
-  font-family: var(--font-ar), var(--font-inter), sans-serif;
+  font-family: var(--font-ar), var(--font-sans-latin), sans-serif;
+  line-height: 1.8;
 }
 /* Arabic swaps the display face and drops Latin tracking — but NOT on
    `.brand-mark`. The TECHNOVA lockup and the TE/CH letters are artwork, not
    translated text: they must stay Orbitron with their own tracking in every
    locale, or the logo changes shape when the visitor switches language. */
 html.lang-ar .font-display:not(.brand-mark) {
-  font-family: var(--font-ar), sans-serif;
+  font-family: var(--font-ar-display), var(--font-ar), sans-serif;
   letter-spacing: 0 !important;
+  line-height: 1.25;
 }
 /* JetBrains Mono has no Arabic coverage, so every mono string — the section
    eyebrows, the console strip, the boot lines, the status labels — was falling
@@ -48,6 +63,214 @@ html.lang-ar .font-mono {
 }
 html.lang-ar .ar-tight {
   letter-spacing: 0 !important;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Type tiers (design-system §2). Applied to elements, never to wrappers.
+   Prefixed `t-` so they cannot collide with Tailwind's own utilities.
+   --------------------------------------------------------------------------- */
+.t-statement {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5.2vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.t-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.t-row {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+.t-lead {
+  font-family: var(--font-sans);
+  font-size: clamp(1.125rem, 1.35vw, 1.375rem);
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+.t-body {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  letter-spacing: 0;
+  font-weight: 400;
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+.t-small {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.t-numeral {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-weight: 300;
+  color: rgb(242 245 251 / 10%);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Arabic tiers: Kufi for display, Plex for body, no Latin tracking, taller
+   lines. The mono label keeps JetBrains with an Arabic fallback (see above). */
+html.lang-ar .t-statement,
+html.lang-ar .t-title,
+html.lang-ar .t-row,
+html.lang-ar .t-numeral {
+  font-family: var(--font-ar-display), var(--font-ar), sans-serif;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+html.lang-ar .t-statement {
+  font-weight: 500;
+  max-width: 16ch;
+}
+html.lang-ar .t-numeral {
+  font-weight: 400;
+  line-height: 1;
+}
+html.lang-ar .t-lead,
+html.lang-ar .t-body,
+html.lang-ar .t-small {
+  font-family: var(--font-ar), sans-serif;
+  letter-spacing: 0;
+  line-height: 1.8;
+}
+html.lang-ar .t-body {
+  max-width: 38ch;
+}
+html.lang-ar .t-label {
+  font-family: var(--font-jbmono), var(--font-ar), monospace;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------------------
+   Grid and rhythm (design-system §4)
+   --------------------------------------------------------------------------- */
+.wrap {
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
+}
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+}
+.rule {
+  border-top: 1px solid var(--color-line);
+}
+.rule-strong {
+  border-top: 1px solid var(--color-line-strong);
+}
+
+/* Device chrome, CSS only. No shadow, no glow: the frame is a hairline and a
+   surface, and the image is the thing. */
+.frame-browser,
+.frame-tablet,
+.frame-phone {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+.frame-browser {
+  border: 1px solid var(--color-line-strong);
+  border-radius: 10px;
+  padding-block-start: 28px;
+}
+/* The title bar: 28px tall, three 8px dots at the inline start. */
+.frame-browser::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 28px;
+  border-block-end: 1px solid var(--color-line);
+  background:
+    radial-gradient(circle 4px at 14px 14px, var(--color-line-strong) 100%, transparent 0),
+    radial-gradient(circle 4px at 30px 14px, var(--color-line-strong) 100%, transparent 0),
+    radial-gradient(circle 4px at 46px 14px, var(--color-line-strong) 100%, transparent 0);
+  pointer-events: none;
+}
+html[dir="rtl"] .frame-browser::before {
+  background:
+    radial-gradient(circle 4px at calc(100% - 14px) 14px, var(--color-line-strong) 100%, transparent 0),
+    radial-gradient(circle 4px at calc(100% - 30px) 14px, var(--color-line-strong) 100%, transparent 0),
+    radial-gradient(circle 4px at calc(100% - 46px) 14px, var(--color-line-strong) 100%, transparent 0);
+}
+.frame-tablet {
+  border: 1px solid var(--color-line-strong);
+  border-radius: 18px;
+  padding: 12px;
+}
+.frame-phone {
+  border: 1px solid var(--color-line-strong);
+  border-radius: 36px;
+  padding: 10px;
+  aspect-ratio: 9 / 19.5;
+}
+.frame-browser > img,
+.frame-tablet > img,
+.frame-phone > img,
+.frame-browser > picture,
+.frame-tablet > picture,
+.frame-phone > picture {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.frame-tablet > img,
+.frame-tablet > picture img {
+  border-radius: 6px;
+}
+.frame-phone > img,
+.frame-phone > picture img {
+  height: 100%;
+  object-fit: cover;
+  border-radius: 26px;
+}
+
+/* Frames drift 1–2% on scroll (design-system §7). JS-free where the browser
+   supports scroll-driven animations; otherwise they simply stay put. */
+@supports (animation-timeline: view()) {
+  @keyframes frame-drift {
+    from { transform: translateY(1.5%); }
+    to { transform: translateY(-1.5%); }
+  }
+  .frame-browser,
+  .frame-tablet,
+  .frame-phone {
+    animation: frame-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
 }
 
 /* Cinematic falloff: sits above the starfield, below the content, so the
@@ -187,4 +410,5 @@ body::after {
   .caret::after { animation: none; }
   .icon-draw [data-draw] { transition: none; stroke-dashoffset: 0; }
   .icon-draw [data-fade] { transition: none; opacity: 1; }
+  .frame-browser, .frame-tablet, .frame-phone { animation: none; transform: none; }
 }

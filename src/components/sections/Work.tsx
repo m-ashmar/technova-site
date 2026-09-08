@@ -2,65 +2,14 @@
 
 import { useState } from "react";
 import { useApp } from "@/components/providers/AppProvider";
-import SectionHeader from "@/components/ui/SectionHeader";
 import Reveal from "@/components/ui/Reveal";
-import Spotlight from "@/components/ui/Spotlight";
+import Act from "@/components/work/Act";
 import { NOVA_LAYOUT_EVENT } from "@/lib/novaState";
 
-function EmbedFrame({
-  url,
-  title,
-  closeLabel,
-  onClose,
-}: {
-  url: string;
-  title: string;
-  closeLabel: string;
-  onClose: () => void;
-}) {
-  return (
-    <div className="mt-6 overflow-hidden rounded-xl border border-nova/30 bg-bg shadow-[0_0_40px_rgb(10_132_255/15%)]">
-      <div
-        dir="ltr"
-        className="flex items-center justify-between border-b border-line bg-surface/80 px-3 py-2"
-      >
-        <span className="flex gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-line" />
-          <span className="h-2 w-2 rounded-full bg-line" />
-          <span className="h-2 w-2 rounded-full bg-nova/60" />
-        </span>
-        <span className="font-mono text-[10px] text-muted">
-          {new URL(url).host}
-        </span>
-        <button
-          type="button"
-          onClick={onClose}
-          className="font-mono text-[10px] tracking-[0.15em] text-muted transition hover:text-ink"
-        >
-          ✕ {closeLabel}
-        </button>
-      </div>
-      {/*
-        An unsandboxed cross-origin frame can navigate its host away, so the
-        embed gets the minimum it needs to boot: scripts, its OWN origin, and
-        target=_blank links. allow-top-navigation is withheld on purpose, and
-        allow="" hands it none of the powerful features (camera, geolocation…).
-        The frame is named for the project — the chrome above already shows the
-        host, and a raw URL makes a poor accessible name.
-      */}
-      <iframe
-        src={url}
-        title={title}
-        loading="lazy"
-        sandbox="allow-scripts allow-same-origin allow-popups"
-        referrerPolicy="no-referrer"
-        allow=""
-        className="aspect-[16/10] w-full bg-black"
-      />
-    </div>
-  );
-}
-
+/**
+ * Work: the opener, then one full-height act per project (design-system §5).
+ * The `#work` and `#act-N` ids are the ScrollDirector's chapter triggers.
+ */
 export default function Work() {
   const { t, projects } = useApp();
   const w = t.sections.work;
@@ -72,83 +21,32 @@ export default function Work() {
     setTimeout(() => window.dispatchEvent(new Event(NOVA_LAYOUT_EVENT)), 60);
   };
 
+  const acts = [...projects].sort((a, b) => a.order - b.order);
+
   return (
-    <section id="work" className="mx-auto max-w-6xl px-5 py-24 md:px-8">
-      <Reveal>
-        <SectionHeader eyebrow={w.eyebrow} title={w.title} lead={w.lead} />
-      </Reveal>
-      <div className="grid gap-5 md:grid-cols-2">
-        {projects.map((p, i) => (
-          <Reveal key={p.slug} delay={i * 60} className="h-full">
-            <Spotlight>
-            <article className="group flex h-full flex-col rounded-2xl border border-line bg-surface/80 p-7 transition duration-300 hover:border-nova/40 hover:bg-surface">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
-                  {p.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      dir="ltr"
-                      className="rounded-full border border-line px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <span
-                  className={`ar-tight whitespace-nowrap font-mono text-[10px] tracking-[0.2em] ${
-                    p.status === "live" ? "text-nova-soft" : "text-muted"
-                  }`}
-                >
-                  {p.status === "live" ? "● " : "◌ "}
-                  {w.statusLabels[p.status]}
-                </span>
-              </div>
-
-              <h3 className="mt-5 font-display text-xl font-medium text-ink">
-                {p.link ? (
-                  <a
-                    href={p.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition hover:text-nova-soft"
-                  >
-                    {p.title} <span aria-hidden>↗</span>
-                  </a>
-                ) : (
-                  p.title
-                )}
-              </h3>
-              <p className="mt-3 flex-1 text-sm leading-7 text-muted">
-                {p.summary}
-              </p>
-              {p.highlight ? (
-                <p className="mt-5 font-mono text-xs text-ink/80">{p.highlight}</p>
-              ) : null}
-
-              {p.media?.embed ? (
-                openSlug === p.slug ? (
-                  <EmbedFrame
-                    url={p.media.embed}
-                    title={p.title}
-                    closeLabel={w.closeLabel}
-                    onClose={() => toggleEmbed(null)}
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => toggleEmbed(p.slug)}
-                    className="ar-tight mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-nova/40 px-4 py-2 font-mono text-[11px] tracking-[0.15em] text-nova-soft transition hover:bg-nova/10"
-                  >
-                    <span aria-hidden>▶</span> {w.playLabel}
-                  </button>
-                )
-              ) : null}
-            </article>
-            </Spotlight>
-          </Reveal>
-        ))}
+    <section id="work" aria-labelledby="work-title" className="pt-24 md:pt-32">
+      <div className="wrap">
+        <Reveal>
+          <p className="t-label rule-strong pt-4 text-muted">{w.eyebrow}</p>
+          <div className="grid-12 mt-10 md:mt-14">
+            <h2 id="work-title" className="t-statement col-span-12 text-ink md:col-span-7">
+              {w.title}
+            </h2>
+            <p className="t-lead col-span-12 mt-6 text-ink-soft md:col-start-9 md:col-span-4 md:mt-2">
+              {w.lead}
+            </p>
+          </div>
+        </Reveal>
       </div>
-      <p className="mt-8 font-mono text-xs text-muted/70">{w.note}</p>
+
+      {acts.map((p) => (
+        <Act
+          key={p.slug}
+          project={p}
+          open={openSlug === p.slug}
+          onToggle={toggleEmbed}
+        />
+      ))}
     </section>
   );
 }

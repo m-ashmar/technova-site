@@ -3,14 +3,26 @@
     "slug": "ai",
     "order": 1,
     "icon": "ai",
+    "deliverables": {
+      "en": [
+        "Agents and assistants wired into your data",
+        "Retrieval over your own documents",
+        "Automation that removes a job from a spreadsheet"
+      ],
+      "ar": [
+        "وكلاء ومساعدون موصولون ببياناتك",
+        "بحث واسترجاع من وثائقك أنت",
+        "أتمتة تُخرج مهمّة كاملة من جدول البيانات"
+      ]
+    },
     "locales": {
       "en": {
         "title": "AI Solutions",
-        "body": "Custom agents, chat intelligence and automation that actually ships — built on modern models and wired into your business."
+        "body": "Agents, assistants and pipelines built on current models and connected to the systems you already run — an intake like NOVA, a search over your files, a step that no longer needs a person."
       },
       "ar": {
         "title": "حلول الذكاء الاصطناعي",
-        "body": "وكلاء مخصّصون وذكاء محادثة وأتمتة تصل إلى الإنتاج فعلًا — مبنية على أحدث النماذج وموصولة بأعمالك."
+        "body": "وكلاء ومساعدون وخطوط معالجة مبنية على النماذج الحالية وموصولة بالأنظمة التي تعمل بها أصلًا — استقبال مثل نوفا، وبحث في ملفاتك، وخطوة لم تعد تحتاج إلى شخص."
       }
     }
   },
@@ -18,14 +30,26 @@
     "slug": "apps",
     "order": 2,
     "icon": "apps",
+    "deliverables": {
+      "en": [
+        "Database, API and admin in one delivery",
+        "Bilingual, RTL-first interfaces",
+        "Roles, permissions and audit trails"
+      ],
+      "ar": [
+        "قاعدة بيانات وواجهة برمجية ولوحة إدارة في تسليم واحد",
+        "واجهات بلغتين تبدأ من اليمين إلى اليسار",
+        "أدوار وصلاحيات وسجلّ تدقيق"
+      ]
+    },
     "locales": {
       "en": {
         "title": "Apps & Platforms",
-        "body": "Full products from database to app store: training platforms, clinic management, operations systems."
+        "body": "Full products from the database to the store listing: judging panels, training platforms, clinic management — with the admin the owner runs without calling us."
       },
       "ar": {
         "title": "التطبيقات والمنصّات",
-        "body": "منتجات كاملة من قاعدة البيانات إلى المتجر: منصّات تدريب، إدارة عيادات، وأنظمة تشغيل."
+        "body": "منتجات كاملة من قاعدة البيانات إلى المتجر: لجان تحكيم، ومنصّات تدريب، وإدارة عيادات — مع لوحة إدارة يشغّلها صاحبها دون أن يتصل بنا."
       }
     }
   },
@@ -33,14 +57,26 @@
     "slug": "web",
     "order": 3,
     "icon": "web",
+    "deliverables": {
+      "en": [
+        "Scroll-driven 3D and motion where it earns its place",
+        "Arabic and English from one content source",
+        "Static-first hosting on your own domain"
+      ],
+      "ar": [
+        "ثلاثي الأبعاد وحركة بالتمرير حيث يستحقّان مكانهما",
+        "العربية والإنكليزية من مصدر محتوى واحد",
+        "استضافة ثابتة على نطاقك الخاص"
+      ]
+    },
     "locales": {
       "en": {
         "title": "Web Experiences",
-        "body": "Sites like this one: 3D, motion, bilingual and fast — windows your clients remember."
+        "body": "Sites like this one: WebGL and motion where they carry the story, two languages from one content file, fast on a phone."
       },
       "ar": {
         "title": "تجارب الويب",
-        "body": "مواقع مثل هذا الموقع: ثلاثية الأبعاد، حركة، بلغتين، وسريعة — نوافذ يتذكّرها عملاؤك."
+        "body": "مواقع مثل هذا الموقع: WebGL وحركة حيث تحملان القصة، ولغتان من ملف محتوى واحد، وسرعة على الهاتف."
       }
     }
   },
@@ -48,14 +84,26 @@
     "slug": "automation",
     "order": 4,
     "icon": "auto",
+    "deliverables": {
+      "en": [
+        "Data pipelines with retries and alerts",
+        "Dashboards over the numbers you already collect",
+        "Webhooks and syncs between the tools you use"
+      ],
+      "ar": [
+        "خطوط بيانات بإعادة محاولة وتنبيهات",
+        "لوحات متابعة فوق الأرقام التي تجمعها أصلًا",
+        "ويب هوك ومزامنة بين الأدوات التي تستخدمها"
+      ]
+    },
     "locales": {
       "en": {
         "title": "Automation & Integration",
-        "body": "Pipelines, dashboards and the glue between your tools — so the boring work runs itself."
+        "body": "Pipelines, dashboards and the glue between your tools — payment reconciliation, photo delivery on purchase, results published the moment they are frozen."
       },
       "ar": {
         "title": "الأتمتة والتكامل",
-        "body": "خطوط بيانات ولوحات تحكّم ووصلات بين أدواتك — ليُدير العملُ المملُّ نفسَه بنفسه."
+        "body": "خطوط بيانات ولوحات متابعة ووصلات بين أدواتك — مطابقة المدفوعات، وتسليم الصور عند الشراء، ونشر النتائج لحظة تجميدها."
       }
     }
   }

@@ -2,7 +2,6 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useApp } from "@/components/providers/AppProvider";
-import { STAR_GLYPH_PATH, STAR_GLYPH_VIEWBOX } from "@/lib/star";
 
 type Pick = { id: string; label: string };
 type ChipField = "type" | "budget" | "timeline";
@@ -96,6 +95,24 @@ function parseDraft(raw: string): StoredDraft | null {
   };
 }
 
+/** The 4-pointed star that opens every NOVA line: 12px, currentColor. */
+function StarGlyph() {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      width="12"
+      height="12"
+      className="mt-2 shrink-0 text-nova-soft"
+      aria-hidden
+    >
+      <path
+        d="M6 0C6.4 3.6 8.4 5.6 12 6 8.4 6.4 6.4 8.4 6 12 5.6 8.4 3.6 6.4 0 6 3.6 5.6 5.6 3.6 6 0Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 function NovaBubble({
   children,
   id,
@@ -105,15 +122,8 @@ function NovaBubble({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-nova/40 bg-nova/10">
-        <svg viewBox={STAR_GLYPH_VIEWBOX} className="h-4 w-auto" aria-hidden>
-          <path d={STAR_GLYPH_PATH} fill="#9CC5FF" />
-        </svg>
-      </span>
-      <div
-        id={id}
-        className="max-w-[85%] rounded-2xl rounded-ss-sm border border-line bg-surface/70 px-4 py-3 text-sm leading-6 text-ink/90"
-      >
+      <StarGlyph />
+      <div id={id} className="t-body min-w-0 text-ink-soft">
         {children}
       </div>
     </div>
@@ -123,9 +133,7 @@ function NovaBubble({
 function UserBubble({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[85%] rounded-2xl rounded-se-sm bg-nova/90 px-4 py-2.5 text-sm leading-6 text-white">
-        {children}
-      </div>
+      <p className="t-body text-end text-ink">{children}</p>
     </div>
   );
 }
@@ -147,14 +155,14 @@ function Chips({
       tabIndex={-1}
       role="group"
       aria-labelledby={labelledBy}
-      className="ms-10 flex flex-wrap gap-2"
+      className="ms-6 flex flex-wrap gap-2"
     >
       {options.map((o) => (
         <button
           key={o.id}
           type="button"
           onClick={() => onPick(o)}
-          className="rounded-full border border-nova/40 px-4 py-2 text-sm text-nova-soft transition hover:bg-nova/10 hover:text-ink"
+          className="t-label rounded-full border border-line px-4 py-2.5 text-ink-soft transition hover:border-line-strong hover:text-ink focus-visible:border-line-strong focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
         >
           {o.label}
         </button>
@@ -377,27 +385,19 @@ export default function NovaChat() {
             : n.steps[step].q;
 
   return (
-    <div className="mx-auto max-w-xl rounded-3xl border border-line bg-bg/60 p-5 backdrop-blur-md sm:p-6">
-      {/* header */}
-      <div className="mb-5 flex items-center gap-3 border-b border-line pb-4">
-        <span className="relative flex h-9 w-9 items-center justify-center rounded-full border border-nova/40 bg-nova/10">
-          <svg viewBox={STAR_GLYPH_VIEWBOX} className="h-5 w-auto" aria-hidden>
-            <path d={STAR_GLYPH_PATH} fill="#9CC5FF" />
-          </svg>
-          <span className="absolute -end-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full bg-nova" />
-        </span>
-        <div className="text-start">
-          <p className="font-display text-sm font-medium tracking-wide text-ink">
-            {n.name}
-          </p>
-          <p className="text-xs text-muted">{n.tagline}</p>
-        </div>
+    <div className="text-start">
+      {/* header: the terminal's title line on a rule that carries meaning */}
+      <div className="rule-strong flex items-baseline justify-between gap-4 pt-3 pb-6">
+        <p className="t-label text-muted" dir="ltr">
+          {t.sections.contact.terminalHeader}
+        </p>
+        <p className="t-label text-nova-soft">{n.name}</p>
       </div>
 
       {/* thread */}
       <div
         ref={threadRef}
-        className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pe-1 text-start"
+        className="flex max-h-[min(62svh,520px)] flex-col gap-5 overflow-y-auto pe-2"
       >
         <NovaBubble>{n.greeting}</NovaBubble>
 
@@ -421,22 +421,26 @@ export default function NovaChat() {
                 <div
                   ref={setActive}
                   tabIndex={-1}
-                  className="ms-10 flex flex-col gap-2"
+                  className="ms-6 flex flex-col gap-4"
                 >
-                  <textarea
-                    value={briefDraft}
-                    onChange={(e) => setBriefDraft(e.target.value)}
-                    aria-labelledby={qid}
-                    placeholder={n.steps.brief.placeholder}
-                    rows={3}
-                    maxLength={CAP.brief}
-                    className="w-full resize-none rounded-xl border border-line bg-surface/70 px-4 py-3 text-sm text-ink placeholder:text-muted/60 focus:border-nova/50"
-                  />
+                  {/* A bottom rule is the whole field; the caret is the prompt. */}
+                  <div className="flex items-start gap-2 border-b border-line transition-colors focus-within:border-nova-soft">
+                    <span className="caret mt-2 shrink-0 text-sm" aria-hidden />
+                    <textarea
+                      value={briefDraft}
+                      onChange={(e) => setBriefDraft(e.target.value)}
+                      aria-labelledby={qid}
+                      placeholder={n.steps.brief.placeholder}
+                      rows={3}
+                      maxLength={CAP.brief}
+                      className="w-full resize-none bg-transparent py-2 text-[1.0625rem] leading-relaxed text-ink outline-none placeholder:text-muted/60"
+                    />
+                  </div>
                   <button
                     type="button"
                     disabled={!briefDraft.trim()}
                     onClick={() => answerText("brief", briefDraft)}
-                    className="self-end rounded-full bg-cta px-5 py-2 text-sm font-medium text-white transition enabled:hover:brightness-110 disabled:opacity-40"
+                    className="self-end rounded-full bg-cta px-5 py-2.5 text-sm font-medium text-white transition enabled:hover:brightness-110 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
                   >
                     {n.steps.brief.next}
                   </button>
@@ -445,24 +449,27 @@ export default function NovaChat() {
                 <form
                   ref={setActive}
                   tabIndex={-1}
-                  className="ms-10 flex gap-2"
+                  className="ms-6 flex flex-col gap-4 sm:flex-row sm:items-end"
                   onSubmit={(e) => {
                     e.preventDefault();
                     answerText("contact", contactDraft);
                   }}
                 >
-                  <input
-                    value={contactDraft}
-                    onChange={(e) => setContactDraft(e.target.value)}
-                    aria-labelledby={qid}
-                    placeholder={n.steps.contact.placeholder}
-                    maxLength={CAP.contact}
-                    className="w-full rounded-full border border-line bg-surface/70 px-4 py-2.5 text-sm text-ink placeholder:text-muted/60 focus:border-nova/50"
-                  />
+                  <div className="flex w-full min-w-0 items-center gap-2 border-b border-line transition-colors focus-within:border-nova-soft">
+                    <span className="caret shrink-0 text-sm" aria-hidden />
+                    <input
+                      value={contactDraft}
+                      onChange={(e) => setContactDraft(e.target.value)}
+                      aria-labelledby={qid}
+                      placeholder={n.steps.contact.placeholder}
+                      maxLength={CAP.contact}
+                      className="w-full bg-transparent py-2 text-[1.0625rem] text-ink outline-none placeholder:text-muted/60"
+                    />
+                  </div>
                   <button
                     type="submit"
                     disabled={contactDraft.trim().length < 3}
-                    className="shrink-0 rounded-full bg-cta px-5 py-2 text-sm font-medium text-white transition enabled:hover:brightness-110 disabled:opacity-40"
+                    className="shrink-0 self-end rounded-full bg-cta px-5 py-2.5 text-sm font-medium text-white transition enabled:hover:brightness-110 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
                   >
                     {/* The brief is not sent here any more — this step now sits
                         second, so it advances the conversation. */}
@@ -480,15 +487,12 @@ export default function NovaChat() {
             tabIndex={-1}
             role="group"
             aria-labelledby="nova-recap-title"
-            className="ms-10 rounded-2xl border border-nova/30 bg-surface/60 p-4"
+            className="ms-6"
           >
-            <p
-              id="nova-recap-title"
-              className="font-mono text-xs tracking-[0.2em] text-nova-soft"
-            >
+            <p id="nova-recap-title" className="t-label text-nova-soft">
               {n.recap.title}
             </p>
-            <dl className="mt-3 space-y-1.5 text-sm">
+            <dl className="mt-4">
               {(
                 [
                   [n.recap.typeLabel, answers.type?.label, false],
@@ -498,26 +502,31 @@ export default function NovaChat() {
                   [n.recap.timelineLabel, answers.timeline?.label, false],
                 ] as const
               ).map(([k, v, clamp]) => (
-                <div key={k} className="flex gap-2">
-                  <dt className="text-muted">{k}:</dt>
-                  <dd className={clamp ? "line-clamp-3 text-ink/90" : "text-ink/90"}>
+                <div
+                  key={k}
+                  className="grid grid-cols-[minmax(5.5rem,auto)_1fr] gap-4 border-t border-line py-3"
+                >
+                  <dt className="t-label pt-1 text-muted">{k}</dt>
+                  <dd
+                    className={`t-small min-w-0 text-ink ${clamp ? "line-clamp-3" : ""}`}
+                  >
                     {v}
                   </dd>
                 </div>
               ))}
             </dl>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-5">
               <button
                 type="button"
                 onClick={send}
-                className="rounded-full bg-cta px-6 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgb(10_132_255/35%)] transition hover:brightness-110"
+                className="rounded-full bg-cta px-6 py-2.5 text-sm font-medium text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
               >
                 {n.recap.confirm}
               </button>
               <button
                 type="button"
                 onClick={reset}
-                className="rounded-full border border-line px-5 py-2.5 text-sm text-muted transition hover:text-ink"
+                className="t-label rounded-full border border-line px-5 py-3 text-ink-soft transition hover:border-line-strong hover:text-ink focus-visible:border-line-strong focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
               >
                 {n.recap.edit}
               </button>
@@ -529,7 +538,7 @@ export default function NovaChat() {
           <div ref={setActive} tabIndex={-1}>
             <NovaBubble>
               <span className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-nova" />
+                <span className="h-1.5 w-1.5 rounded-full bg-nova motion-safe:animate-pulse" />
                 {n.sending}
               </span>
             </NovaBubble>
@@ -539,25 +548,27 @@ export default function NovaChat() {
         {phase === "sent" && (
           <div ref={setActive} tabIndex={-1}>
             <NovaBubble>
-              <p className="font-medium text-ink">{n.sentTitle}</p>
+              <p className="text-ink">{n.sentTitle}</p>
               <p className="mt-1 text-muted">
                 {delivered ? n.sentBody : n.fallbackNote}
               </p>
-              {!delivered && (
-                <a
-                  href={mailtoHref()}
-                  className="mt-3 inline-block rounded-full bg-cta px-5 py-2 text-sm font-medium text-white transition hover:brightness-110"
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                {!delivered && (
+                  <a
+                    href={mailtoHref()}
+                    className="inline-block rounded-full bg-cta px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
+                  >
+                    {n.fallbackCta}
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="t-label text-muted underline-offset-4 transition hover:text-ink hover:underline"
                 >
-                  {n.fallbackCta}
-                </a>
-              )}
-              <button
-                type="button"
-                onClick={reset}
-                className="mt-3 ms-3 text-xs text-muted underline-offset-4 transition hover:text-ink hover:underline"
-              >
-                {n.restart}
-              </button>
+                  {n.restart}
+                </button>
+              </div>
             </NovaBubble>
           </div>
         )}
@@ -565,11 +576,11 @@ export default function NovaChat() {
         {phase === "error" && (
           <div ref={setActive} tabIndex={-1}>
             <NovaBubble>
-              <p className="text-ink/90">{n.errorNote}</p>
+              <p>{n.errorNote}</p>
               <button
                 type="button"
                 onClick={send}
-                className="mt-3 rounded-full border border-nova/40 px-5 py-2 text-sm text-nova-soft transition hover:bg-nova/10"
+                className="t-label mt-4 rounded-full border border-line px-5 py-3 text-ink-soft transition hover:border-line-strong hover:text-ink focus-visible:border-line-strong focus-visible:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nova-soft"
               >
                 {n.recap.confirm}
               </button>

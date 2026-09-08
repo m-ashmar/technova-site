@@ -8,10 +8,11 @@ import { useApp } from "@/components/providers/AppProvider";
  * Drives the organism through the scroll journey:
  *
  *   hero       star, centered, full size — HELD, untouched, for the whole hero
- *   #work      -> phone, tucked to the side, small
+ *   #work      -> phone, tucked to the side, small (then per-act parking)
  *   #services  -> neural web, other side
+ *   #about     -> neural web drifts to the end columns
  *   #signature -> the wordmark (TECHNOVA / تكنوفا), centered
- *   #contact   wordmark floats up small above the NOVA chat
+ *   #contact   wordmark settles small under the invitation, beside NOVA
  *
  * The hero is the site's opening act: the first chapter deliberately does not
  * begin until #work has climbed to mid-screen (~55% of the hero scrolled), so
@@ -29,7 +30,13 @@ import { useApp } from "@/components/providers/AppProvider";
  * already left the top.
  */
 
-type Pose = { morph: number; offX: number; offY: number; zoom: number; idle: number };
+type Pose = {
+  morph: number;
+  offX: number;
+  offY: number;
+  zoom: number;
+  idle: number;
+};
 type Chapter = {
   sel: string;
   start: number;
@@ -58,19 +65,69 @@ export default function ScrollDirector() {
     }
     const side = dir === "rtl" ? -1 : 1;
 
+    // Acts (#act-1 … #act-5) are optional selectors: an act that is not in
+    // the DOM resolves to null below and is skipped by apply().
     const chapters: Chapter[] = [
       {
         sel: "#work",
-        // late start: the hero keeps its star whole and centred
+        // late start: the hero keeps its star whole and centred. offY is set
+        // explicitly so a hash landing (measured mid-scroll) cannot park the
+        // organism off-screen.
         start: 0.45,
         end: -0.15,
-        vars: { morph: 1, offX: 0.58 * side, zoom: 0.55, idle: 0.65 },
+        vars: {
+          morph: 1,
+          offX: 0.62 * side,
+          offY: 0.05,
+          zoom: 0.55,
+          idle: 0.65,
+        },
+      },
+      // Per-act parking (design-system §5): media-end, media-start, theatre,
+      // spec, phones — the organism takes whichever column the act leaves
+      // empty, and rises above the text-only media (spec rows, feature list).
+      {
+        sel: "#act-1",
+        start: 0.7,
+        end: 0.2,
+        vars: { offX: 0.62 * side, offY: 0.05, zoom: 0.55 },
+      },
+      {
+        sel: "#act-2",
+        start: 0.7,
+        end: 0.2,
+        vars: { offX: -0.62 * side, offY: 0.05, zoom: 0.55 },
+      },
+      {
+        sel: "#act-3",
+        start: 0.7,
+        end: 0.2,
+        vars: { offX: 0.55 * side, offY: 0.1, zoom: 0.6 },
+      },
+      {
+        sel: "#act-4",
+        start: 0.7,
+        end: 0.2,
+        vars: { offX: 0.62 * side, offY: 0.42, zoom: 0.45 },
+      },
+      {
+        sel: "#act-5",
+        start: 0.7,
+        end: 0.2,
+        vars: { offX: 0.62 * side, offY: 0.42, zoom: 0.45 },
       },
       {
         sel: "#services",
         start: 0.75,
         end: 0.25,
-        vars: { morph: 2, offX: -0.58 * side, zoom: 0.5, idle: 0.65 },
+        vars: { morph: 2, offX: -0.62 * side, offY: 0, zoom: 0.5, idle: 0.65 },
+      },
+      {
+        // Studio keeps its content in cols 1–8; the graph owns the end columns
+        sel: "#about",
+        start: 0.75,
+        end: 0.25,
+        vars: { morph: 2, offX: 0.66 * side, offY: 0, zoom: 0.55, idle: 0.8 },
       },
       {
         sel: "#signature",
@@ -79,14 +136,27 @@ export default function ScrollDirector() {
         vars: { morph: 3, offX: 0, offY: 0.06, zoom: 0.85, idle: 1 },
       },
       {
+        // the wordmark signs off under the invitation, beside the terminal,
+        // where no text can ever scroll under it
         sel: "#contact",
         start: 0.75,
         end: 0.25,
-        vars: { offY: 0.4, zoom: 0.45, idle: 0.7 },
+        vars: { offX: -0.42 * side, offY: -0.27, zoom: 0.45, idle: 0.7 },
       },
     ];
 
     const els = chapters.map((c) => document.querySelector(c.sel));
+
+    // Below md the page is one column and no column is ever empty, so the
+    // organism becomes a small companion parked under the nav at the inline
+    // end instead of running behind the text. The morph chain is unchanged;
+    // only where it sits. The signature keeps its full centred pose.
+    const narrow = window.matchMedia("(max-width: 47.9rem)");
+    const MOBILE_PARK: Partial<Pose> = {
+      offX: 0.62 * side,
+      offY: 0.6,
+      zoom: 0.2,
+    };
 
     const apply = () => {
       const vh = window.innerHeight || 1;
@@ -101,8 +171,12 @@ export default function ScrollDirector() {
         const span = startPx - endPx;
         const p = span === 0 ? 0 : clamp01((startPx - top) / span);
         if (p <= 0) continue;
-        for (const key of Object.keys(ch.vars) as (keyof Pose)[]) {
-          const target = ch.vars[key];
+        const vars =
+          narrow.matches && ch.sel !== "#signature"
+            ? { ...ch.vars, ...MOBILE_PARK }
+            : ch.vars;
+        for (const key of Object.keys(vars) as (keyof Pose)[]) {
+          const target = vars[key];
           if (target !== undefined) s[key] += (target - s[key]) * p;
         }
       }
