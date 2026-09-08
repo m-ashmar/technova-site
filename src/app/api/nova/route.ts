@@ -170,8 +170,8 @@ function gate(
 const TAIL_RE = /\s*\[\[(ask|ready)\]\]\s*$/;
 /** Characters held back from the stream until it ends, enough to cover "\n[[ready]]". */
 const HOLD = 12;
-/** The prompt forbids em and en dashes; the model still lets one through now and then. */
-const DASH_RE = /\s*[\u2014\u2013]/g;
+/** The prompt forbids em dashes; the model still lets one through now and then. En dashes stay: the budget and timeline labels are ranges. */
+const DASH_RE = /\s*\u2014/g;
 
 /**
  * Next step after a chat reply: the model's tail when it wrote one, else a
